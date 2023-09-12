@@ -82,7 +82,6 @@ void opcontrol() {
 		chassis.tankControl();
 		robotManage();
 		// pros::lcd::set_text(4, "Left: " + to_string(chassis.getLeftPosition()) + "\tRight: " + to_string(chassis.getRightPosition()));
-		chassis.updateOdom();
 		pros::delay(20);
 	}
 }
