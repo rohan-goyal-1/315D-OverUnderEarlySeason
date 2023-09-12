@@ -17,9 +17,28 @@ pros::MotorGroup DriveR ({ RF, RM, RB, });
 vector<pros::IMU> gyro = {/* pros::IMU(imu1), */pros::IMU(imu2)};
 
 Drive chassis (
+	ZERO_ENCODER,
 	gyro,
 	&DriveR,
 	&DriveL,
 	36.0 / 60.0,
-	3.25
+	3.25,
+	0.0,
+	5.875,
+	0.0,
+	NULL
+);
+
+Drive prog_chassis (
+	ONE_ENCODER,
+	gyro,
+	&DriveR,
+	&DriveL,
+	36.0 / 60.0,
+	3.25,
+	2.75,
+	5.875,
+	// TODO: change side encoder values once it is attached
+	0.0,
+	NULL
 );

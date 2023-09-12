@@ -1,17 +1,24 @@
 #include "globals.h"
 
-Drive::Drive(vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam) :
+Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder) :
     gyro(gyro),
     DriveR(DriveR),
     DriveL(DriveL),
     gearRatio(gearRatio),
-    wheelDiam(wheelDiam),
     wheelCircum(wheelDiam * PI),
-    pos(Position(0, 0, 0))
+    odom(Odom(Position(0, 0, 0), forwDist, sideDist, 0, 0)),
+    sideCircum(sideDiam * PI),
+    sideEncoder(sideEncoder),
+    odomTask(updateOdom)
 {}
 
+void Drive::setHeading(double heading) {
+    for (auto& imu : gyro) imu.set_heading(heading);
+}
+
 void Drive::setPosition(Position p) {
-    pos = p;
+    odom.pos = p;
+    setHeading(p.heading);
 }
 
 void Drive::chassisInit() {
@@ -268,7 +275,31 @@ void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double
     this->driveWithVoltage(0, 0);
 }
 
-void Drive::tankControl() {
+double Drive::getSideEncoder () {
+    if (drive_type == ZERO_ENCODER) return 0.0;
+    return sideEncoder->get_position() / 36000 * sideCircum; // TODO: get_position() vs. get_angle()
+}
+
+double Drive::getForwPos () {
+    return this->getRightPosition();
+}
+
+double Drive::getSidePos () {
+    if (drive_type == ZERO_ENCODER) return 0.0;
+    return this->getSideEncoder();
+}
+
+void Drive::startOdom () {
+    odom_started = true;
+}
+
+void Drive::updateOdom () {
+    if (!odom_started) return;
+    odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
+    pros::lcd::set_text(5, odom.pos.toString());
+}
+
+void Drive::tankControl () {
     double l = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jly);
     double r = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jry);
 

@@ -63,6 +63,7 @@ void initialize() {
 	chassis.setSwingExitConditions(2, 200, 3000);
 
 	chassis.chassisInit();
+	chassis.startOdom();
 	initPneumatics();
 }
 
@@ -77,13 +78,11 @@ void autonomous() {
 void opcontrol() {
 	initPneumatics();
 	chassis.motorInitCoast();
-	Odom odom(Position(0, 0, chassis.getHeading()), 5.875, 0, chassis.getRightPosition(), 0.0);
     while (true) {
 		chassis.tankControl();
 		robotManage();
-		pros::lcd::set_text(4, "Left: " + to_string(chassis.getLeftPosition()) + "\tRight: " + to_string(chassis.getRightPosition()));
-		odom.update(chassis.getRightPosition(), 0, chassis.getHeading());
-		pros::lcd::set_text(5, odom.pos.toString());
+		// pros::lcd::set_text(4, "Left: " + to_string(chassis.getLeftPosition()) + "\tRight: " + to_string(chassis.getRightPosition()));
+		chassis.updateOdom();
 		pros::delay(20);
 	}
 }

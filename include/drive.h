@@ -2,12 +2,16 @@
 
 #include "globals.h"
 
+enum DriveType {
+    ZERO_ENCODER,
+    ONE_ENCODER
+};
 class Drive {
     private:
         // Physical Constants
         double gearRatio;
-        double wheelDiam;
         double wheelCircum;
+        double sideCircum;
 
         // PID Constants
         double drive_kp;
@@ -46,11 +50,17 @@ class Drive {
         pros::MotorGroup* DriveR;
         pros::MotorGroup* DriveL;
         vector<pros::IMU>& gyro;
+        DriveType drive_type;
 
-        Position pos;
+        Odom odom;
+        pros::Task odomTask;
+        double forwDist;
+        double sideDist;
+        bool odom_started = false;
+        pros::Rotation* sideEncoder;
 
     public:
-        Drive(vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam);
+        Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder);
 
         // Init stuff
         void chassisInit(void);
@@ -106,4 +116,13 @@ class Drive {
 
         // Drive options
         void tankControl(void);
+
+        // Odom functions
+        double getSideEncoder(void);
+        double getForwPos(void);
+        double getSidePos(void);
+        void setHeading(double heading);
+        void setPosition(Position p);
+        void startOdom(void);
+        void updateOdom(void);
 };
