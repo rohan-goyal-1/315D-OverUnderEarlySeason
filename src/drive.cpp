@@ -8,8 +8,7 @@ Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* Dr
     wheelCircum(wheelDiam * PI),
     odom(Odom(Position(0, 0, 0), forwDist, sideDist, 0, 0)),
     sideCircum(sideDiam * PI),
-    sideEncoder(sideEncoder),
-    odomTask(updateOdom)
+    sideEncoder(sideEncoder)
 {}
 
 void Drive::setHeading(double heading) {
@@ -160,20 +159,25 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
 } 
 
 void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
-    PID turnPID(angle - this->getHeading(), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    // Create the PID object to calculate the outputs
+    PID turnPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
 
-    // Start time
+    // Start the running time here
     turnPID.start();
     
+    // Compute and move the drivetrain until the exit conditions are met
     while (!turnPID.is_settled()) {
+        // Update the error values
         double error = angle - this->getHeading();
 
+        //Compute the output based on the error and drive the chassis
         double output = clamp(turnPID.compute(error), -maxVolt, maxVolt);
         this->driveWithVoltage(output, -output);
 
         // Delay to avoid hogging the processor
         pros::delay(5);
     }
+    // Brake when exit conditions are met
     this->driveWithVoltage(0, 0);
 }
 
@@ -191,7 +195,7 @@ void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_erro
 } 
 
 void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
-    PID swingPID(angle - this->getHeading(), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID swingPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
     swingPID.start();
@@ -222,7 +226,7 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
 } 
 
 void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
-    PID swingPID(angle - this->getHeading(), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID swingPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
     swingPID.start();
@@ -232,7 +236,7 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
 
         double output = clamp(swingPID.compute(error), -maxVolt, maxVolt);
 
-        this->driveWithVoltage(0, output);
+        this->driveWithVoltage(0, -output);
 
         // Delay to avoid hogging the processor
         pros::delay(5);
@@ -290,13 +294,17 @@ double Drive::getSidePos () {
 }
 
 void Drive::startOdom () {
+    // odomTask = pros::Task(updateOdom);
     odom_started = true;
 }
 
 void Drive::updateOdom () {
-    if (!odom_started) return;
-    odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
-    pros::lcd::set_text(5, odom.pos.toString());
+    while (true) {
+        if (!odom_started) continue;
+        odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
+        pros::lcd::set_text(5, odom.pos.toString());
+        wait(5);
+    }
 }
 
 void Drive::tankControl () {

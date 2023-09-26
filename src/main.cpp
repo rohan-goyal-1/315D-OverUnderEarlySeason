@@ -31,7 +31,7 @@ void intakeManage (int which) {
 }
 
 void cataManage () {
-	cata.move_voltage(stateMachine[CATA] ? 0 : -MAX_VOLT * 0.925);
+	cata.move_voltage(stateMachine[CATA] ? 0 : -MAX_VOLT * 0.9);
 	stateMachine[CATA] = !stateMachine[CATA];
 }
 
@@ -53,12 +53,12 @@ void on_center_button() {}
 
 void initialize() {
 	pros::lcd::initialize(); pros::lcd::register_btn1_cb(on_center_button);
-    chassis.setDriveConstants(500.0, 3.0, 70.0, MAX_VOLT, 20.0);
-	chassis.setTurnConstants(160.0, 03.5, 16.0, MAX_VOLT, 20.0);
-	chassis.setSwingConstants(235.0, 01.0, 90.0, MAX_VOLT, 40.0);
-	chassis.setHeadingConstants(150.0, 0.0, 00.0, MAX_VOLT / 3, 40);
+    chassis.setDriveConstants(700.0, 5.0, 00.0, 10000, 5.0);
+	chassis.setTurnConstants(120.0, 7.0, 10.0, 9000, 10.0);
+	chassis.setSwingConstants(120.0, 7.0, 300.0, 9000, 10.0);
+	chassis.setHeadingConstants(50.0, 0.0, 00.0, 400, 40);
 
-	chassis.setTurnExitConditions(3, 200, 3000);
+	chassis.setTurnExitConditions(2, 200, 1000);
 	chassis.setDriveExitConditions(1, 200, 5000);
 	chassis.setSwingExitConditions(2, 200, 3000);
 
@@ -72,6 +72,7 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+	// progSkills();
 	farSide();
 }
 
@@ -81,7 +82,24 @@ void opcontrol() {
     while (true) {
 		chassis.tankControl();
 		robotManage();
-		// pros::lcd::set_text(4, "Left: " + to_string(chassis.getLeftPosition()) + "\tRight: " + to_string(chassis.getRightPosition()));
+		// if (master.get_digital_new_press(pros::buttonA)) {
+		// 	flapjacks.set_value(true);
+		// 	wait(200);
+		// 	flapjacks.set_value(false);
+		// 	chassis.turn_to_angle(160);
+		// 	chassis.drive_dist(-5);
+		// 	wait(500);
+		// 	cata.move_voltage(-MAX_VOLT * 0.9);
+		// 	wait(30000); 
+		// 	cata.move_voltage(0);
+		// 	chassis.drive_dist(5);
+		// 	chassis.turn_to_angle(-120);
+		// 	chassis.drive_dist(-25);
+		// 	wait(500);
+		// 	chassis.drive_dist(25);
+		// }
+		pros::lcd::set_text(4, "Left: " + to_string(chassis.getLeftPosition()) + "\tRight: " + to_string(chassis.getRightPosition()));
+		pros::lcd::set_text(5, "Heading: " + to_string(chassis.getHeading()));
 		pros::delay(20);
 	}
 }

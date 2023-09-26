@@ -4,3 +4,4 @@
 
 void farSide(void);
 void closeSide(void);
+void progSkills(void);

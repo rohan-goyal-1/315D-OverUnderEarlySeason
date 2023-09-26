@@ -53,7 +53,7 @@ class Drive {
         DriveType drive_type;
 
         Odom odom;
-        pros::Task odomTask;
+        // pros::Task odomTask;
         double forwDist;
         double sideDist;
         bool odom_started = false;
@@ -67,7 +67,6 @@ class Drive {
         void motorInitBrake(void);
         void motorInitCoast(void);
         void gyroInit(void);
-        void setPosition(Position p);
 
         // Misc
         void driveWithVoltage(double left, double right);
