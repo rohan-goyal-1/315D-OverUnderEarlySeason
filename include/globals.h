@@ -22,6 +22,7 @@ using namespace std;
 #include <unordered_set>
 #include <bitset>
 #include <numeric>
+#include <memory>
 
 #define pct_to_volt(a) ( (a / 127) * MAX_VOLT)
 
@@ -55,11 +56,13 @@ double to_deg(double angle_rad);
 double clamp(double input, double min, double max);
 double to_volt(double pct);
 double deadband(double input, double width);
+int sign(double a);
 double reduceDiff (double desired, double curr);
 
 #include "api.h"
 #include "position.h"
 #include "autons.h"
+#include "robotMgr.h"
 #include "main.h"
 #include "odom.h"
 #include "drive.h"

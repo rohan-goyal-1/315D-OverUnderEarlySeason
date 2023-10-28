@@ -53,7 +53,7 @@ class Drive {
         DriveType drive_type;
 
         Odom odom;
-        // pros::Task odomTask;
+        pros::Task odomTask;
         double forwDist;
         double sideDist;
         bool odom_started = false;
@@ -113,10 +113,14 @@ class Drive {
         void drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout);
         void drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti);
 
+        // Odom methods
+        void move_to_point(Position point);
+        void move_to_point(Position point, double drive_maxVolt, double heading_maxVolt);
+
         // Drive options
         void tankControl(void);
 
-        // Odom functions
+        // Odom helper methods
         double getSideEncoder(void);
         double getForwPos(void);
         double getSidePos(void);

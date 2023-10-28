@@ -3,7 +3,8 @@
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 pros::Motor intake(INTAKE_MTR), cata(CATA_MTR);
-pros::adi::DigitalOut flapjacks(FLAP_P), endgame(ENDGAME_P), arm(ARM_P);
+pros::adi::DigitalOut flapjacks(FLAP_P), endgame(ENDGAME_P), blocker(BLOCKER_P);
+pros::adi::DigitalIn bumper(BUMPER_PORT);
 
 // pros::MotorGroup DriveL ({ LF, LM, LB, }, pros::v5::MotorGears::blue); 
 // pros::MotorGroup DriveR ({ RF, RM, RB, }, pros::v5::MotorGears::blue); 

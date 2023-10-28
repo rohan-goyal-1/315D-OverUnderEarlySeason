@@ -8,7 +8,8 @@ Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* Dr
     wheelCircum(wheelDiam * PI),
     odom(Odom(Position(0, 0, 0), forwDist, sideDist, 0, 0)),
     sideCircum(sideDiam * PI),
-    sideEncoder(sideEncoder)
+    sideEncoder(sideEncoder),
+    odomTask([this]{ this->updateOdom(); })
 {}
 
 void Drive::setHeading(double heading) {
@@ -160,7 +161,7 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
 
 void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
     // Create the PID object to calculate the outputs
-    PID turnPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID turnPID(angle - this->getHeading(), kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start the running time here
     turnPID.start();
@@ -168,7 +169,7 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
     // Compute and move the drivetrain until the exit conditions are met
     while (!turnPID.is_settled()) {
         // Update the error values
-        double error = angle - this->getHeading();
+        double error = reduceDiff(angle, this->getHeading());
 
         //Compute the output based on the error and drive the chassis
         double output = clamp(turnPID.compute(error), -maxVolt, maxVolt);
@@ -201,7 +202,7 @@ void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_erro
     swingPID.start();
     
     while (!swingPID.is_settled()) {
-        double error = angle - this->getHeading();
+        double error = reduceDiff(angle, this->getHeading());
 
         double output = clamp(swingPID.compute(error), -maxVolt, maxVolt);
 
@@ -232,7 +233,7 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
     swingPID.start();
     
     while (!swingPID.is_settled()) {
-        double error = angle - this->getHeading();
+        double error = reduceDiff(angle, this->getHeading());
 
         double output = clamp(swingPID.compute(error), -maxVolt, maxVolt);
 
@@ -267,12 +268,12 @@ void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double
     double start_pos = (this->getLeftPosition() + this->getRightPosition()) / 2;
     while (!drivePID.is_settled()) {
         double drive_error = start_pos + dist - ((this->getLeftPosition() + this->getRightPosition()) / 2);
-        double heading_error = heading - this->getHeading();
+        double heading_error = reduceDiff(heading, this->getHeading());
 
         double drive_output = clamp(drivePID.compute(drive_error), -drive_maxVolt, drive_maxVolt);
-        double heading_ouput = clamp(headingPID.compute(heading_error), -heading_maxVolt, heading_maxVolt);
+        double heading_output = clamp(headingPID.compute(heading_error), -heading_maxVolt, heading_maxVolt);
 
-        this->driveWithVoltage(drive_output + heading_ouput, drive_output - heading_ouput);
+        this->driveWithVoltage(drive_output + heading_output, drive_output - heading_output);
         // Delay to avoid hogging processor
         pros::delay(5);
     }
@@ -281,7 +282,7 @@ void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double
 
 double Drive::getSideEncoder () {
     if (drive_type == ZERO_ENCODER) return 0.0;
-    return sideEncoder->get_position() / 36000 * sideCircum; // TODO: get_position() vs. get_angle()
+    return sideEncoder->get_position() / 36000 * sideCircum;
 }
 
 double Drive::getForwPos () {
@@ -294,16 +295,15 @@ double Drive::getSidePos () {
 }
 
 void Drive::startOdom () {
-    // odomTask = pros::Task(updateOdom);
     odom_started = true;
 }
 
 void Drive::updateOdom () {
     while (true) {
-        if (!odom_started) continue;
+        if (!odom_started) return;
         odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
         pros::lcd::set_text(5, odom.pos.toString());
-        wait(5);
+        wait(10);
     }
 }
 
@@ -313,3 +313,9 @@ void Drive::tankControl () {
 
     this->driveWithVoltage(pct_to_volt(l), pct_to_volt(r));
 }
+
+void Drive::move_to_point (Position point) {
+    move_to_point(point, drive_maxVolt, heading_maxVolt);
+}
+
+// void Drive::move_to_point (Position point, double )

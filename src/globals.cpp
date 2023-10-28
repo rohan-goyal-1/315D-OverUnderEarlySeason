@@ -54,7 +54,20 @@ double deadband(double input, double width) {
     return input;
 }
 
+int sign (double a) {
+    if (a < 0) return -1;
+    return 1;
+}
+
 double reduceDiff (double desired, double curr) {
-    double delta = desired - curr;
-    return (signbit(desired) == signbit(curr)) ? delta : (delta >= 180.0) ? 360.0 - delta : (delta <= -180.0) ? -360.0 - delta : -delta;
+    double delta = desired - curr, ans;
+    if (sign(desired) == sign(curr)) 
+        ans = delta;
+    else if (delta >= 180.0)
+        ans = 360.0 - delta;
+    else if (delta <= -180.0) 
+        ans = -360.0 - delta;
+    else
+        ans = delta;
+    return ans;
 }

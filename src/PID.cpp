@@ -32,7 +32,7 @@ double PID::compute(double error) {
         accum_error += error;
 
     // If the robot crossed the desired value, reset accumulated error to 0
-    if ( (error > 0 && prev_error < 0) || (error < 0 && prev_error > 0) )
+    if (sign(error) != sign(prev_error))
         accum_error = 0;
 
     // Calculate the output based on current error, accumulated error, and previous error
@@ -40,16 +40,14 @@ double PID::compute(double error) {
 
     // If current error less than settle error, increment settle time; otherwise, reset the settle time.
     if (abs(error) <= settle_error) {
-        if (settled_start_time == -1)
-            settled_start_time = time_running;
-        else
-            time_settled = time_running - settled_start_time;
+        time_settled += 5;
     }
     else {
-        settled_start_time = -1;
         time_settled = 0;
     }
     
+    prev_error = error;
+
     // Increment running time
     time_running += 5;
 

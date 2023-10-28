@@ -3,27 +3,31 @@
 #include "globals.h"
 
 // Motors
-#define LF -19
-#define LM 20
-#define LB -21
-#define RF -8
-#define RM 9
-#define RB 10
-#define INTAKE_MTR 1
-#define CATA_MTR 6
+#define LF -7 //done
+#define LM 9 //done
+#define LB -4
+#define RF 13 //done
+#define RM -12
+#define RB 8 //done
+#define INTAKE_MTR 11
+#define CATA_MTR 16
 
 // IMU ports
 #define imu1 18
-#define imu2 3
+#define imu2 15
 
 // Pneumatics
 #define FLAP_P 'B'
 #define ENDGAME_P 'C'
-#define ARM_P 'A'
+#define BLOCKER_P 'A'
+
+// ADI sensors
+#define BUMPER_PORT 'D'
 
 extern pros::Controller master;
 extern pros::Motor intake, cata;
 extern pros::MotorGroup DriveR, DriveL;
 extern vector<pros::IMU> gyro;
 extern Drive chassis;
-extern pros::adi::DigitalOut flapjacks, endgame, arm;
+extern pros::adi::DigitalOut flapjacks, endgame, blocker;
+extern pros::adi::DigitalIn bumper;
