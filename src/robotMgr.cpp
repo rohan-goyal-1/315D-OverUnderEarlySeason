@@ -19,6 +19,7 @@ void RobotMgr::robotManage () {
 }
 
 void RobotMgr::pneuManage () {
+    if (currState == PROGRAM_STATE::OPCONTROL) {
     if (master.get_digital_new_press(pros::buttonL1)) {
         pneumatics[FLAPJACK]->set_value(!stateMachine[FLAPJACK]);
         stateMachine[FLAPJACK] = !stateMachine[FLAPJACK];
@@ -30,6 +31,7 @@ void RobotMgr::pneuManage () {
     if (master.get_digital_new_press(pros::buttonDown)) {
         pneumatics[ENDGAME]->set_value(!stateMachine[ENDGAME]);
         stateMachine[ENDGAME] = !stateMachine[ENDGAME];
+    }
     }
 }
 
@@ -54,7 +56,7 @@ void RobotMgr::intakeManage () {
         }
         break;
 
-    case PROGRAM_STATE::AUTONOMOUS:
+    case PROGRAM_STATE::INITIALIZE:
         if (intake.get_actual_velocity() > 2 && intake.get_voltage() == 0) {
             wait(500);
             chassis.gyroInit();
@@ -64,9 +66,11 @@ void RobotMgr::intakeManage () {
 }
 
 void RobotMgr::cataManage () {
+    if (currState == PROGRAM_STATE::OPCONTROL) {
     if (master.get_digital_new_press(pros::buttonX)) {
         cata.move_voltage(stateMachine[CATA] ? 0 : -MAX_VOLT);
         stateMachine[CATA] = !stateMachine[CATA];
+    }
     }
 }
 

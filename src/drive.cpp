@@ -9,7 +9,7 @@ Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* Dr
     odom(Odom(Position(0, 0, 0), forwDist, sideDist, 0, 0)),
     sideCircum(sideDiam * PI),
     sideEncoder(sideEncoder),
-    odomTask([this]{ this->updateOdom(); })
+    odomTask([this] { this->updateOdom(); })
 {}
 
 void Drive::setHeading(double heading) {
@@ -300,18 +300,20 @@ void Drive::startOdom () {
 
 void Drive::updateOdom () {
     while (true) {
-        if (!odom_started) return;
+        if (!odom_started) continue;
         odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
-        pros::lcd::set_text(5, odom.pos.toString());
+        pros::lcd::set_text(6, odom.pos.toString());
         wait(10);
     }
 }
 
 void Drive::tankControl () {
+    if (Robot::RobotMgr::currState == PROGRAM_STATE::OPCONTROL) {
     double l = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jly);
     double r = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jry);
 
     this->driveWithVoltage(pct_to_volt(l), pct_to_volt(r));
+    }
 }
 
 void Drive::move_to_point (Position point) {
