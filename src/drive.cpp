@@ -63,6 +63,7 @@ double Drive::getHeading() {
     double sum = 0;
     for (auto& imu : gyro) 
         sum += imu.get_yaw();
+    // TODO: get_heading() vs. get_yaw()
     return sum / gyro.size();
 }
 

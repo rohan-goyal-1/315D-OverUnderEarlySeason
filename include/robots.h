@@ -5,12 +5,12 @@
 // Motors
 #define LF -7 //done
 #define LM 9 //done
-#define LB -4
+#define LB -4 //done
 #define RF 13 //done
-#define RM -12
+#define RM -12 //done
 #define RB 8 //done
 #define INTAKE_MTR 11
-#define CATA_MTR 16
+#define CATA_MTR 1
 
 // IMU ports
 #define imu1 18
@@ -22,7 +22,7 @@
 #define BLOCKER_P 'A'
 
 // ADI sensors
-#define BUMPER_PORT 'D'
+#define BUMPER_PORT 'H'
 
 extern pros::Controller master;
 extern pros::Motor intake, cata;

@@ -21,7 +21,7 @@ class RobotMgr {
     public:
         static vector<bool> stateMachine;
         static vector<pros::adi::DigitalOut*> pneumatics;
-        static pros::Task robotManager;
+        static pros::Task* robotManager;
         static PROGRAM_STATE currState;
         static void intakeManage(void);
         static void cataManage(void);
