@@ -1,6 +1,6 @@
 #include "globals.h"
 
-Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder) :
+Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder, double trackWidth) :
     gyro(gyro),
     DriveR(DriveR),
     DriveL(DriveL),
@@ -9,7 +9,7 @@ Drive::Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* Dr
     odom(Odom(Position(0, 0, 0), forwDist, sideDist, 0, 0)),
     sideCircum(sideDiam * PI),
     sideEncoder(sideEncoder),
-    odomTask([this] { this->updateOdom(); })
+    trackWidth(trackWidth)
 {}
 
 void Drive::setHeading(double heading) {
@@ -21,9 +21,19 @@ void Drive::setPosition(Position p) {
     setHeading(p.heading);
 }
 
+Position Drive::getPosition (bool radians) {
+    if (!radians) {
+        return odom.pos;
+    }
+    return Position(odom.pos.x, odom.pos.y, to_rad(odom.pos.heading));
+}
+
 void Drive::chassisInit() {
     gyroInit();
     motorInitBrake();
+    if (drive_type == DriveType::ONE_ENCODER && sideEncoder != nullptr) {
+        sideEncoder->reset();
+    }
 }
 
 void Drive::motorInitBrake() {
@@ -49,6 +59,7 @@ void Drive::gyroInit() {
         imu.reset(); 
         while (imu.is_calibrating()) pros::delay(5);
     }
+    pros::c::controller_rumble(pros::E_CONTROLLER_MASTER, "-");
 	pros::lcd::print(2, "Finished gyro calibration");
 }
 
@@ -63,7 +74,6 @@ double Drive::getHeading() {
     double sum = 0;
     for (auto& imu : gyro) 
         sum += imu.get_yaw();
-    // TODO: get_heading() vs. get_yaw()
     return sum / gyro.size();
 }
 
@@ -162,7 +172,7 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
 
 void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
     // Create the PID object to calculate the outputs
-    PID turnPID(angle - this->getHeading(), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID turnPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start the running time here
     turnPID.start();
@@ -197,7 +207,7 @@ void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_erro
 } 
 
 void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
-    PID swingPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID swingPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
     swingPID.start();
@@ -228,7 +238,7 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
 } 
 
 void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
-    PID swingPID(reduceDiff(angle, this->getHeading()), kp, ki, kd, starti, settle_error, settle_time, timeout);
+    PID swingPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
     swingPID.start();
@@ -247,7 +257,7 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
 }
 
 void Drive::drive_dist(double dist) {
-    drive_dist(dist, getHeading());
+    drive_dist(dist, this->getHeading());
 }
 
 void Drive::drive_dist(double dist, double heading) {
@@ -263,8 +273,8 @@ void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double
 }
 
 void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti) {
-   PID drivePID(dist, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
-   PID headingPID(reduceDiff(heading, this->getHeading()), heading_kp, heading_ki, heading_kd, heading_starti);
+   PID drivePID(drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+   PID headingPID(heading_kp, heading_ki, heading_kd, heading_starti);
     
     double start_pos = (this->getLeftPosition() + this->getRightPosition()) / 2;
     while (!drivePID.is_settled()) {
@@ -281,31 +291,31 @@ void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double
     this->driveWithVoltage(0, 0);
 }
 
-double Drive::getSideEncoder () {
-    if (drive_type == ZERO_ENCODER) return 0.0;
-    return sideEncoder->get_position() / 36000 * sideCircum;
-}
-
 double Drive::getForwPos () {
     return this->getRightPosition();
 }
 
 double Drive::getSidePos () {
     if (drive_type == ZERO_ENCODER) return 0.0;
-    return this->getSideEncoder();
+    return sideEncoder->get_position() / 36000 * sideCircum;
 }
 
 void Drive::startOdom () {
-    odom_started = true;
+    odomTask = new pros::Task{[this] {
+        while (true) {
+            odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
+            pros::lcd::set_text(6, odom.pos.toString());
+            wait(10);
+        }
+    }};
 }
 
-void Drive::updateOdom () {
-    while (true) {
-        if (!odom_started) continue;
-        odom.update(this->getForwPos(), this->getSidePos(), this->getHeading());
-        pros::lcd::set_text(6, odom.pos.toString());
-        wait(10);
-    }
+void Drive::pauseOdom () {
+    odomTask->suspend();
+}
+
+void Drive::resumeOdom () {
+    odomTask->resume();
 }
 
 void Drive::tankControl () {
@@ -317,8 +327,82 @@ void Drive::tankControl () {
     }
 }
 
-void Drive::move_to_point (Position point) {
-    move_to_point(point, drive_maxVolt, heading_maxVolt);
+void Drive::move_to_point (Position point, bool forwards) {
+    move_to_point(point, drive_maxVolt, forwards);
 }
 
-// void Drive::move_to_point (Position point, double )
+void Drive::move_to_point (Position point, double maxVolt, bool forwards, double lead, double chasePower) {
+    if (!mutex.take(10)) return;
+
+    Position target(point.x, point.y, PI / 2 - to_rad(point.heading)); 
+    Position lastPose = this->getPosition();
+    PID linearPID = PID(drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+    PID angularPID = PID(turn_kp, turn_ki, turn_kd, turn_starti);
+    double prevLinearPower = 0;
+    PROGRAM_STATE compState = Robot::RobotMgr::currState;
+    int start = pros::millis();
+    distTravelled = 0;
+
+    if (!forwards) target.heading = fmod(target.heading + PI, 2 * PI); // backwards movement
+
+    bool close = false; // used for settling
+
+    while (Robot::RobotMgr::currState == compState && !linearPID.is_settled()) {
+        Position pose = this->getPosition(true);
+        if (!forwards) pose.heading += PI;
+        pose.heading = PI / 2 - pose.heading;
+
+        distTravelled += pose.distance(lastPose);
+        lastPose = pose;
+
+        if (pose.distance(target) < 7.5 && close == false) {
+            close = true;
+            maxVolt = fmax(fabs(prevLinearPower), 30);
+        }
+
+        Position carrot = target - (Position(cos(target.heading), sin(target.heading), 0) * lead * pose.distance(target));
+        if (close) carrot = target;
+
+        double angularError = to_rad(reduceDiff(pose.angle(carrot), pose.heading));
+        double linearError = pose.distance(carrot) * cos(angularError);
+        if (close) angularError = to_rad(reduceDiff(target.heading, pose.heading));
+        if (!forwards) linearError = -linearError;
+
+        double angularPower = -angularPID.compute(to_deg(angularError));
+        double linearPower = linearPID.compute(linearError);
+
+        double curvature = fabs(getCurvature(pose, carrot));
+        if (curvature == 0) curvature = -1;
+        double radius = 1 / curvature;
+
+        if (radius != -1) {
+            double maxTurnSpeed = sqrt(chasePower * radius * 9.8);
+            if (linearPower > maxTurnSpeed && !close) linearPower = maxTurnSpeed;
+            else if (linearPower < -maxTurnSpeed && !close) linearPower = -maxTurnSpeed;
+        }
+
+        double overturn = fabs(angularPower) + fabs(linearPower) - maxVolt;
+        if (overturn > 0) linearPower -= linearPower > 0 ? overturn : -overturn;
+        prevLinearPower = linearPower;
+
+        double leftPower = linearPower + angularPower;
+        double rightPower = linearPower - angularPower;
+
+        this->driveWithVoltage(leftPower, rightPower);
+
+        pros::delay(10); 
+    }
+
+    this->driveWithVoltage(0, 0);
+    distTravelled = -1;
+    mutex.give();
+}
+double Drive::getCurvature (Position pose, Position other) {
+    double side = sign(sin(pose.heading) * (other.x - pose.x) - cos(pose.heading) * (other.y - pose.y));
+    double a = -tan(pose.heading);
+    double c = tan(pose.heading) * pose.x - pose.y;
+    double x = fabs(a * other.x + other.y + c) / sqrt((a * a) + 1);
+    double d = hypot(other.x - pose.x, other.y - pose.y);
+
+    return side * ((2 * x) / (d * d));
+}

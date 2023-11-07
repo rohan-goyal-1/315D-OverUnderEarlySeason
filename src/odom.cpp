@@ -27,10 +27,14 @@ void Odom::update(double forwPos, double sidePos, double new_heading) {
         local_y_pos = forward_delta;
     }
     else {
-        local_x_pos = 2 * sin(heading_delta_rad/2) * ((side_delta / heading_delta_rad) + side_tracker_distance); 
-        local_y_pos = 2 * sin(heading_delta_rad/2) * ((forward_delta / heading_delta_rad) + forw_tracker_pos);
+        local_x_pos = 2 * sin(heading_delta_rad / 2) * ((side_delta / heading_delta_rad) + side_tracker_distance); 
+        local_y_pos = 2 * sin(heading_delta_rad / 2) * ((forward_delta / heading_delta_rad) + forw_tracker_distance);
     }
-
+    // double avgHeading = prev_heading_rad + heading_delta_rad / 2;
+    // pos.x += local_y_pos * sin(avgHeading);
+    // pos.y += local_y_pos * cos(avgHeading);
+    // pos.x += local_x_pos * -cos(avgHeading);
+    // pos.y += local_x_pos * sin(avgHeading);
     double local_polar_angle;
     double local_polar_length;
     if (local_x_pos == 0 && local_y_pos == 0){

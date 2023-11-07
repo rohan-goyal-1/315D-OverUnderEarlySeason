@@ -68,3 +68,4 @@ double reduceDiff (double desired, double curr);
 #include "drive.h"
 #include "PID.h"
 #include "robots.h"
+#include "selector.h"

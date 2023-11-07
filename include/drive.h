@@ -12,6 +12,7 @@ class Drive {
         double gearRatio;
         double wheelCircum;
         double sideCircum;
+        double trackWidth;
 
         // PID Constants
         double drive_kp;
@@ -53,14 +54,15 @@ class Drive {
         DriveType drive_type;
 
         Odom odom;
-        pros::Task odomTask;
+        pros::Task* odomTask;
         double forwDist;
         double sideDist;
-        bool odom_started = false;
         pros::Rotation* sideEncoder;
+        pros::Mutex mutex;
+        double distTravelled = 0;
 
     public:
-        Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder);
+        Drive(DriveType drive_type, vector<pros::IMU>& gyro, pros::MotorGroup* DriveR, pros::MotorGroup* DriveL, double gearRatio, double wheelDiam, double sideDiam, double forwDist, double sideDist, pros::Rotation* sideEncoder, double trackWidth);
 
         // Init stuff
         void chassisInit(void);
@@ -114,18 +116,24 @@ class Drive {
         void drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti);
 
         // Odom methods
-        void move_to_point(Position point);
-        void move_to_point(Position point, double drive_maxVolt, double heading_maxVolt);
+        void move_to_point(Position point, bool forwards = true);
+        void move_to_point(Position point, double maxVolt, bool forwards = true, double lead = 0.6, double chasePower = 2);
 
         // Drive options
         void tankControl(void);
 
         // Odom helper methods
-        double getSideEncoder(void);
         double getForwPos(void);
         double getSidePos(void);
         void setHeading(double heading);
         void setPosition(Position p);
+        Position getPosition(bool radians = false);
         void startOdom(void);
-        void updateOdom(void);
+        void pauseOdom(void);
+        void resumeOdom(void);
+        double getCurvature(Position pose, Position other);
+
+        // Pursuit methods
+        void follow(vector<Position> pathPoints, int timeout, double lookahead, bool async = true, bool forwards = true, double maxSpeed = 12000);
+        void waitUntilDist(double dist);
 };

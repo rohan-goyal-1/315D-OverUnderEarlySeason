@@ -60,14 +60,20 @@ int sign (double a) {
 }
 
 double reduceDiff (double desired, double curr) {
-    double delta = desired - curr, ans;
-    if (sign(desired) == sign(curr)) 
-        ans = delta;
-    else if (delta >= 180.0)
-        ans = 360.0 - delta;
-    else if (delta <= -180.0) 
-        ans = -360.0 - delta;
-    else
-        ans = delta;
-    return ans;
+    double delta = desired - curr;
+    if (delta > 180.0) {
+        delta -= 360.0;
+    }
+    else if (delta < -180.0) {
+        delta += 360.0;
+    }
+    // if (sign(desired) == sign(curr)) 
+    //     ans = delta;
+    // else if (delta >= 180.0)
+    //     ans = 360.0 - delta;
+    // else if (delta <= -180.0) 
+    //     ans = -360.0 - delta;
+    // else
+    //     ans = delta;
+    return delta;
 }

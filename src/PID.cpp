@@ -1,6 +1,6 @@
 #include "globals.h"
 
-PID::PID(double error, double kp, double ki, double kd, double starti, double settle_error, double settle_time, double timeout) :
+PID::PID(double kp, double ki, double kd, double starti, double settle_error, double settle_time, double timeout) :
     error(error),
     kp(kp),
     ki(ki),
@@ -11,15 +11,12 @@ PID::PID(double error, double kp, double ki, double kd, double starti, double se
     timeout(timeout)
 {}
 
-PID::PID(double error, double kp, double ki, double kd, double starti) :
+PID::PID(double kp, double ki, double kd, double starti) :
     error(error),
     kp(kp),
     ki(ki),
     kd(kd),
-    starti(starti),
-    settle_error(settle_error),
-    settle_time(settle_time),
-    timeout(timeout)
+    starti(starti)
 {}
 
 void PID::start() {

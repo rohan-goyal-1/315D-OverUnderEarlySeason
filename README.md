@@ -1,5 +1,5 @@
-# 315D-OverUnderEarlySeason
+# 315D-OverUnder
 
-This project is what team 315D used for Early Season.
+This project represents the code used by team 315D for the 2023-24 VRC Game Over Under.
 
-Includes usage of PID and Odometry.
+Includes of PID, Odometry, Pure Pursuit.

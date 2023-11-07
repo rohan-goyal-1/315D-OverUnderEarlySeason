@@ -63,10 +63,12 @@ void RobotMgr::intakeManage () {
         break;
 
     case PROGRAM_STATE::INITIALIZE:
-        // if (intake.get_actual_velocity() > 2 && intake.get_voltage() == 0) {
-        //     wait(500);
-        //     chassis.gyroInit();
-        // }
+        if (intake.get_actual_velocity() > 2 && intake.get_voltage() == 0) {
+            wait(500);
+            chassis.pauseOdom();
+            chassis.gyroInit();
+            chassis.resumeOdom();
+        }
         break;
     }
 }
@@ -81,14 +83,14 @@ void RobotMgr::cataManage () {
 }
 
 void RobotMgr::driveInit () {
-    chassis.setDriveConstants(700.0, 5.0, 00.0, 10000, 5.0);
-	chassis.setTurnConstants(120.0, 8.0, 10.0, 9000, 10.0);
-	chassis.setSwingConstants(170.0, 8.0, 12.0, 9000, 10.0);
-	chassis.setHeadingConstants(120.0, 10.0, 50.0, 1000, 40);
+    chassis.setDriveConstants(1500.0, 00.0, 10000.0, 10000, 0.0);
+	chassis.setTurnConstants(400.0, 10.0, 4000.0, 12000, 15.0);
+	chassis.setSwingConstants(550.0, 10.0, 6000.0, 12000, 15.0);
+	chassis.setHeadingConstants(400.0, 0.0, 1000.0, 6000, 0.0);
 
-	chassis.setTurnExitConditions(1, 200, 1000);
-	chassis.setDriveExitConditions(1, 200, 2000);
-	chassis.setSwingExitConditions(2, 200, 3000);
+	chassis.setTurnExitConditions(1, 100, 1000);
+	chassis.setDriveExitConditions(1, 100, 2000);
+	chassis.setSwingExitConditions(1, 100, 3000);
 
 	chassis.chassisInit();
 	chassis.startOdom();
@@ -97,8 +99,7 @@ void RobotMgr::driveInit () {
 void RobotMgr::robotInit () {
     // Initial drive and pneumatics states
     driveInit();
-    // TODO: uncomment
-    // pneumaticsInit();
+    pneumaticsInit();
     if (robotManager == nullptr) {
         robotManager = new pros::Task {[=] {
             while (true) {
@@ -113,7 +114,9 @@ void RobotMgr::pneumaticsInit () {
 	pneumatics[BLOCKER] = &blocker,
 	pneumatics[ENDGAME] = &endgame,
 	pneumatics[FLAPJACK] = &flapjacks;
-    for (auto& p : pneumatics) p->set_value(false);
+    pneumatics[FLAPJACK]->set_value(false);
+    pneumatics[ENDGAME]->set_value(false);
+    pneumatics[BLOCKER]->set_value(false);
 }
 
 }

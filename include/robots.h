@@ -3,23 +3,24 @@
 #include "globals.h"
 
 // Motors
-#define LF -7 //done
-#define LM 9 //done
-#define LB -4 //done
-#define RF 13 //done
-#define RM -12 //done
-#define RB 8 //done
+#define LF -20 //done
+#define LM 18 //done
+#define LB -15 //done
+#define RF 16 //done
+#define RM -14 //done
+#define RB 12 //done
 #define INTAKE_MTR 11
-#define CATA_MTR 1
+#define CATA_MTR 2
 
 // IMU ports
-#define imu1 18
-#define imu2 15
+#define Imu 19
+
+#define ROT 17
 
 // Pneumatics
-#define FLAP_P 'B'
-#define ENDGAME_P 'C'
-#define BLOCKER_P 'A'
+#define FLAP_P 'A'
+#define ENDGAME_P 'G'
+#define BLOCKER_P 'F'
 
 // ADI sensors
 #define BUMPER_PORT 'H'

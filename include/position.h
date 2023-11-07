@@ -18,8 +18,12 @@ class Position {
         Position operator-(const Position& other);
         Position operator+=(const Position& other);
         Position operator-=(const Position& other);
+        double operator*(const Position& other);
+        Position operator*(const double other);
 
         // Between two poses
         double angle(const Position& other);
         double distance(const Position& other);
+
+        Position lerp(Position other, float t);
 };

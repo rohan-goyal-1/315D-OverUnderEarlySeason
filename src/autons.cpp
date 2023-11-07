@@ -1,77 +1,76 @@
 #include "globals.h"
 
-void farSideAWP () {
-    while (abs(45 - chassis.getHeading()) >= 2) chassis.driveWithVoltage(0, -6000);
-    chassis.drive_dist(-6);
-    flapjacks.set_value(true);
-    wait(500);
-    chassis.drive_dist(4);
-    flapjacks.set_value(false);
-    chassis.drive_dist(-17, 110);
-    chassis.turn_to_angle(-90);
-    intake.move_voltage(-MAX_VOLT);
-    wait(500);
+void closeSideAWP () {
+    intake.move_voltage(MAX_VOLT);
+    chassis.drive_dist(40);
     intake.move_voltage(0);
-    chassis.turn_to_angle(90);
-    chassis.driveWithVoltage(-7000, -7000);
-    wait(600);
-    chassis.driveWithVoltage(0, 0);
-    // chassis.drive_dist(-14, 90);
-    wait(100);
-    // chassis.drive_dist(2, 90);
-    chassis.turn_to_angle(25);
-    chassis.drive_dist(27, 45);
-    chassis.turn_to_angle(0);
-    intake.move_voltage(-MAX_VOLT);
-    chassis.drive_dist(37, 0);
-}
-
-void closeSide () {
-    //TODO: set initial position
-    chassis.drive_dist(45, 0);
-    chassis.turn_to_angle(90);
+    chassis.turn_to_angle(-70);
     intake.move_voltage(-MAX_VOLT);
     wait(200);
-    intake.move_voltage(0);
-    chassis.drive_dist(20, 90);
-    wait(100);
-    chassis.drive_dist(-10, 90);
-    chassis.turn_to_angle(-55);
+    chassis.drive_dist(-7);
+    chassis.turn_to_angle(7);
     intake.move_voltage(MAX_VOLT);
-    chassis.drive_dist(7, -55);
-    wait(500);
-    chassis.turn_to_angle(90);
-    intake.move_voltage(-MAX_VOLT);
-    chassis.drive_dist(30, 90);
+    chassis.drive_dist(12);
     intake.move_voltage(0);
-    wait(500);
-    chassis.drive_dist(-15, 90);
+    chassis.drive_dist(-3);
+    chassis.turn_to_angle(90);
+    chassis.drive_dist(-15);
+    chassis.drive_dist(25);
+    chassis.turn_to_angle(-135);
+    chassis.drive_dist(53);
+    chassis.turn_to_angle(-45);
+    flapjacks.set_value(true);
+    chassis.drive_dist(-5);
+    chassis.left_swing_to_angle(-90);
+    flapjacks.set_value(false);
+    wait(200);
+    chassis.turn_to_angle(130);
+    intake.move_voltage(-MAX_VOLT);
+    chassis.drive_dist(40, 90);
+    intake.move_voltage(0);
 }
 
 void farSide () {
-    chassis.drive_dist(42, 0);
-    chassis.turn_to_angle(-90);
-    intake.move_voltage(-MAX_VOLT);
-    wait(200);
-    chassis.drive_dist(-2, -90);
-    intake.move_voltage(0);
-    chassis.turn_to_angle(90);
-    chassis.drive_dist(-15, 90);
-    wait(100);
-    chassis.drive_dist(23, 90);
-    chassis.turn_to_angle(0);
     intake.move_voltage(MAX_VOLT);
-    chassis.drive_dist(5, 0);
-    wait(500);
-    chassis.drive_dist(-7, 0);
+    chassis.drive_dist(10);
     intake.move_voltage(0);
-    chassis.turn_to_angle(90);
-    chassis.driveWithVoltage(11000, 11000);
+    chassis.drive_dist(-30);
+    chassis.left_swing_to_angle(-45);
+    flapjacks.set_value(true);
+    chassis.drive_dist(-13);
+    chassis.left_swing_to_angle(-90);
+    flapjacks.set_value(false);
     wait(500);
-    chassis.driveWithVoltage(0, 0);
+    chassis.turn_to_angle(135);
     intake.move_voltage(-MAX_VOLT);
     wait(500);
-    chassis.drive_dist(-25, 90);
+    chassis.drive_dist(12, 90);
+    chassis.drive_dist(-10, 90);
+    intake.move_voltage(MAX_VOLT);
+    chassis.turn_to_angle(20);
+    chassis.drive_dist(50);
+    intake.move_voltage(0);
+    chassis.drive_dist(-15);
+    chassis.turn_to_angle(140);
+    intake.move_voltage(-MAX_VOLT);
+    wait(750);
+    chassis.drive_dist(5);
+    chassis.right_swing_to_angle(35);
+    intake.move_voltage(MAX_VOLT);
+    chassis.drive_dist(30);
+    intake.move_voltage(0);
+    chassis.drive_dist(-5);
+    flapjacks.set_value(true);
+    chassis.drive_dist(-28, 0);
+    chassis.drive_dist(10);
+    flapjacks.set_value(false);
+    // wait(500);
+    chassis.turn_to_angle(180);
+    intake.move_voltage(-MAX_VOLT);
+    chassis.drive_dist(7);
+    intake.move_voltage(0);
+    chassis.drive_dist(-5);
+    pros::lcd::lcd_btn_cb_fn_t();
 }
 
 void progSkills () {

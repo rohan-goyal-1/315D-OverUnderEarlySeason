@@ -36,10 +36,18 @@ Position Position::operator-=(const Position& other) {
     return Position(this->x - other.x, this->y - other.y, this->heading - other.heading);
 }
 
+double Position::operator*(const Position& other) { return this->x * other.x + this->y * other.y; }
+
+Position Position::operator*(const double other) { return Position(this->x * other, this->y * other, this->heading); }
+
 double Position::angle(const Position& other) {
     return atan2(other.y - this->y, other.x - this->x);
 }
 
 double Position::distance(const Position& other) {
     return hypot(this->x - other.x, this->y - other.y);
+}
+
+Position Position::lerp(Position other, float t) {
+    return Position(this->x + (other.x - this->x) * t, this->y + (other.y - this->y) * t, this->heading);
 }
