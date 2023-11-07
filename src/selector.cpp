@@ -1,20 +1,22 @@
 #include "globals.h"
 
+size_t AutonSelector::current = 0;
+vector<Auton> AutonSelector::autons;
+pros::Task* AutonSelector::selectorTask = nullptr;
+
 void AutonSelector::add (void (*auton) (void), string message) {
     autons.push_back(Auton(auton, message));
 }
 
+void AutonSelector::increment () { current++; current %= autons.size(); }
+void AutonSelector::decrement () { current--; current %= autons.size(); }
+
 void AutonSelector::start () {
-    //TODO: make it to touch screen based
     if (Robot::RobotMgr::currState == PROGRAM_STATE::INITIALIZE) {
+        pros::lcd::register_btn2_cb(&AutonSelector::increment);
+        pros::lcd::register_btn0_cb(&AutonSelector::decrement);
         selectorTask = new pros::Task{[this] {
             while (true) {
-                if (Robot::RobotMgr::currState != PROGRAM_STATE::INITIALIZE) {
-                    selectorTask->remove();
-                }
-                if (bumper.get_new_press())
-                    current++;
-                current %= autons.size();
                 pros::lcd::set_text(1, autons[current].message);
                 wait(10);
             }

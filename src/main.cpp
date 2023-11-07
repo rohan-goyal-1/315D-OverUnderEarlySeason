@@ -2,11 +2,9 @@
 
 AutonSelector selector;
 
-void on_center_button() {}
-
 void initialize() {
 	Robot::RobotMgr::currState = PROGRAM_STATE::INITIALIZE;
-	pros::lcd::initialize(); pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::initialize(); 
 	Robot::RobotMgr::robotInit();
 	selector.add(closeSideAWP, "Close-side AWP with one ball disturb");
 	selector.add(farSide, "Far-side 6-ball");
@@ -20,8 +18,7 @@ void competition_initialize() {}
 
 void autonomous() {
 	Robot::RobotMgr::currState = PROGRAM_STATE::AUTONOMOUS;
-	// selector.run();
-	farSide();
+	selector.run();
 }
 
 void opcontrol() {

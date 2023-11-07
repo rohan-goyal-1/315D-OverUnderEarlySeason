@@ -13,13 +13,15 @@ struct Auton {
 
 class AutonSelector {
     private:
-        vector<Auton> autons;
-        size_t current = 0;
-        pros::Task* selectorTask;
+        static vector<Auton> autons;
+        static size_t current;
+        static pros::Task* selectorTask;
 
     public:
         AutonSelector(void){};
         void add(void (*auton) (void), string message);
         void start(void);
-        void run();
+        void run(void);
+        static void increment(void);
+        static void decrement(void);
 };

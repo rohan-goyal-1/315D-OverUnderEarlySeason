@@ -2,7 +2,7 @@
 
 // Initialize static variables
 vector<bool> Robot::RobotMgr::stateMachine(6, false);
-vector<pros::adi::DigitalOut*> Robot::RobotMgr::pneumatics(6, NULL);
+vector<pros::adi::DigitalOut*> Robot::RobotMgr::pneumatics(6, nullptr);
 pros::Task* Robot::RobotMgr::robotManager = nullptr;
 PROGRAM_STATE Robot::RobotMgr::currState = PROGRAM_STATE::INITIALIZE;
 

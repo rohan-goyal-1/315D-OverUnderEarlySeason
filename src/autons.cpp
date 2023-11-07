@@ -1,9 +1,7 @@
 #include "globals.h"
 
 void closeSideAWP () {
-    intake.move_voltage(MAX_VOLT);
     chassis.drive_dist(40);
-    intake.move_voltage(0);
     chassis.turn_to_angle(-70);
     intake.move_voltage(-MAX_VOLT);
     wait(200);
