@@ -59,7 +59,7 @@ void Drive::gyroInit() {
         imu.reset(); 
         while (imu.is_calibrating()) pros::delay(5);
     }
-    pros::c::controller_rumble(pros::E_CONTROLLER_MASTER, "-");
+    master.rumble("-");
 	pros::lcd::print(2, "Finished gyro calibration");
 }
 
