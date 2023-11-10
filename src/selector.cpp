@@ -9,7 +9,7 @@ void AutonSelector::add (void (*auton) (void), string message) {
 }
 
 void AutonSelector::increment () { current++; current %= autons.size(); }
-void AutonSelector::decrement () { current--; current %= autons.size(); }
+void AutonSelector::decrement () { current--; current = current < 0 ? autons.size() - 1 : current; }
 
 void AutonSelector::start () {
     if (Robot::RobotMgr::currState == PROGRAM_STATE::INITIALIZE) {
