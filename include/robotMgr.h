@@ -30,6 +30,8 @@ class RobotMgr {
         static void pneumaticsInit(void);
         static void driveInit(void);
         static void robotManage(void);
+        static void intakeBall(double);
+        static void outtakeBall(double);
 };
 
 }

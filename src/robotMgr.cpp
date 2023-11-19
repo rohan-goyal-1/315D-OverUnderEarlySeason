@@ -73,6 +73,24 @@ void RobotMgr::intakeManage () {
     }
 }
 
+void RobotMgr::intakeBall (double timeout) {
+    pros::Task* intakeTask = new pros::Task {[=] {
+        double start = pros::millis();
+        intake.move_voltage(MAX_VOLT);
+        waitUntil(bumper.get_value() || pros::millis() - start >= timeout);
+        intake.move_voltage(0);
+    }};
+}
+
+void RobotMgr::outtakeBall (double timeout) {
+    pros::Task* outtakeTask = new pros::Task {[=] {
+        double start = pros::millis();
+        intake.move_voltage(-MAX_VOLT);
+        waitUntil(!bumper.get_value() || pros::millis() - start >= timeout);
+        intake.move_voltage(0);
+    }};
+}
+
 void RobotMgr::cataManage () {
     if (currState == PROGRAM_STATE::OPCONTROL) {
     if (master.get_digital_new_press(pros::buttonX)) {
@@ -90,7 +108,7 @@ void RobotMgr::driveInit () {
 
 	chassis.setTurnExitConditions(1, 100, 1000);
 	chassis.setDriveExitConditions(1, 100, 2000);
-	chassis.setSwingExitConditions(1, 100, 3000);
+	chassis.setSwingExitConditions(1, 100, 1000);
 
 	chassis.chassisInit();
 	chassis.startOdom();

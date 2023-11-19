@@ -6,8 +6,10 @@ void initialize() {
 	Robot::RobotMgr::currState = PROGRAM_STATE::INITIALIZE;
 	pros::lcd::initialize(); 
 	Robot::RobotMgr::robotInit();
-	selector.add(closeSideAWP, "Close-side AWP with one ball disturb");
-	selector.add(farSide, "Far-side 6-ball");
+	selector.add(closeSideAWP, "Quals: Close-side with one ball disturb");
+	selector.add(closeSideElims, "Elims: Close-side with one ball disturb");
+	selector.add(farSideMidRush, "Quals: Far-side mid-rush");
+	selector.add(farSide6Ball, "Elims: Far-side 6-ball");
 	selector.add(progSkills, "Prog. skills");
 	selector.start();
 }

@@ -24,7 +24,7 @@ using namespace std;
 #include <numeric>
 #include <memory>
 
-#define pct_to_volt(a) ( (a / 127) * MAX_VOLT)
+#define pct_to_volt(a) ( ((a) / 127) * MAX_VOLT)
 
 #define PI 3.14159265358979323846
 #define abs fabs
@@ -47,6 +47,11 @@ using namespace std;
 #define buttonL2 E_CONTROLLER_DIGITAL_L2
 #define MAX_VOLT 12000
 #define wait pros::delay
+
+#define waitUntil(condition)                                                   \
+    do {                                                                       \
+        pros::delay(5);                                                        \
+    } while (!(condition))
 
 double reduce_0_to_360(double angle);
 double reduce_neq_180_to_180(double angle);

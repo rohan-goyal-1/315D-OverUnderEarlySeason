@@ -18,7 +18,7 @@
 #define ROT 17
 
 // Pneumatics
-#define FLAP_P 'A'
+#define FLAP_P 'E'
 #define ENDGAME_P 'G'
 #define BLOCKER_P 'F'
 

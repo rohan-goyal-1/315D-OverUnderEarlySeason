@@ -12,19 +12,17 @@ void AutonSelector::increment () { current++; current %= autons.size(); }
 void AutonSelector::decrement () { current--; current = current < 0 ? autons.size() - 1 : current; }
 
 void AutonSelector::start () {
-    if (Robot::RobotMgr::currState == PROGRAM_STATE::INITIALIZE) {
-        pros::lcd::register_btn2_cb(&AutonSelector::increment);
-        pros::lcd::register_btn0_cb(&AutonSelector::decrement);
-        selectorTask = new pros::Task{[this] {
-            while (true) {
-                pros::lcd::set_text(1, autons[current].message);
-                wait(10);
+    pros::lcd::register_btn2_cb(&AutonSelector::increment);
+    pros::lcd::register_btn0_cb(&AutonSelector::decrement);
+    selectorTask = new pros::Task{[this] {
+        while (true) {
+            if (Robot::RobotMgr::currState != PROGRAM_STATE::INITIALIZE) {
+                break;
             }
-        }};
-    }
-    else {
-        selectorTask->remove();
-    }
+            pros::lcd::set_text(1, autons[current].message);
+            wait(10);
+        }
+    }};
 }
 
 void AutonSelector::run () {

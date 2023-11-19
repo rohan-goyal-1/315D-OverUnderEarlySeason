@@ -67,13 +67,5 @@ double reduceDiff (double desired, double curr) {
     else if (delta < -180.0) {
         delta += 360.0;
     }
-    // if (sign(desired) == sign(curr)) 
-    //     ans = delta;
-    // else if (delta >= 180.0)
-    //     ans = 360.0 - delta;
-    // else if (delta <= -180.0) 
-    //     ans = -360.0 - delta;
-    // else
-    //     ans = delta;
     return delta;
 }

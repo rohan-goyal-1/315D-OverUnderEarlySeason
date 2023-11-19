@@ -115,6 +115,11 @@ class Drive {
         void drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout);
         void drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti);
 
+        
+        void turn_and_drive(double heading, double dist, double turnVolt, double tolerance = 2);
+        void left_swing_and_drive(double heading, double dist, double turnVolt, double tolerance = 2);
+        void right_swing_and_drive(double heading, double dist, double turnVolt, double tolerance = 2);
+
         // Odom methods
         void move_to_point(Position point, bool forwards = true);
         void move_to_point(Position point, double maxVolt, bool forwards = true, double lead = 0.6, double chasePower = 2);

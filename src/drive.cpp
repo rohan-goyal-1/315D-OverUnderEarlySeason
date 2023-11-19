@@ -406,3 +406,30 @@ double Drive::getCurvature (Position pose, Position other) {
 
     return side * ((2 * x) / (d * d));
 }
+
+void Drive::turn_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+    double error = reduceDiff(heading, this->getHeading());
+    while (abs(error) > tolerance) {
+        this->driveWithVoltage(turnVolt * sign(error), -turnVolt * sign(error));
+        error = reduceDiff(heading, this->getHeading());
+    }
+    this->drive_dist(dist, heading);
+}
+
+void Drive::left_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+    double error = reduceDiff(heading, this->getHeading());
+    while (abs(error) > tolerance) {
+        this->driveWithVoltage(turnVolt * sign(error), 0);
+        error = reduceDiff(heading, this->getHeading());
+    }
+    this->drive_dist(dist, heading);
+}
+
+void Drive::right_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+    double error = reduceDiff(heading, this->getHeading());
+    while (abs(error) > tolerance) {
+        this->driveWithVoltage(0, -turnVolt * sign(error));
+        error = reduceDiff(heading, this->getHeading());
+    }
+    this->drive_dist(dist, heading);
+}
