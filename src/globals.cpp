@@ -1,35 +1,5 @@
 #include "globals.h"
 
-double reduce_0_to_360(double angle) {
-    while (angle < 0 || angle >= 360)  {
-        if (angle < 0) angle += 360;
-        if (angle >= 360) angle -= 360;
-    }
-    return angle;
-}
-
-double reduce_neg_180_to_180(double angle) {
-    while (angle < -180 || angle >= 180) {
-        if (angle < -180) angle += 360;
-        if (angle >= 180) angle -= 360;
-    }
-    return angle;
-}
-
-double relative_neg_180_to_180(double angle) {
-    if (angle < 0) 
-        return -(angle + 180);
-    return angle;
-}
-
-double reduce_neg_90_to_90(double angle) {
-    while (angle < -90 || angle >= 90) {
-        if (angle < -90) angle += 180;
-        if (angle >= 90) angle -= 180;
-    }
-    return angle;
-}
-
 double to_rad(double angle_deg) {
     return angle_deg / (180.0/PI);
 }
@@ -49,14 +19,11 @@ double to_volt(double pct) {
 }
 
 double deadband(double input, double width) {
-    if (abs(input) < width)
-        return 0;
-    return input;
+    return abs(input) < width ? 0 : input;
 }
 
 int sign (double a) {
-    if (a < 0) return -1;
-    return 1;
+    return a < 0 ? -1 : 1;
 }
 
 double reduceDiff (double desired, double curr) {

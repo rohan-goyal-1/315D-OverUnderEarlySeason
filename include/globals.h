@@ -53,9 +53,6 @@ using namespace std;
         pros::delay(5);                                                        \
     } while (!(condition))
 
-double reduce_0_to_360(double angle);
-double reduce_neq_180_to_180(double angle);
-double reduce_neg_90_to_90(double angle);
 double to_rad(double angle_deg);
 double to_deg(double angle_rad);
 double clamp(double input, double min, double max);
