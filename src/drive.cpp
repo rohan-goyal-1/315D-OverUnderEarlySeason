@@ -42,7 +42,6 @@ void Drive::motorInitBrake() {
 
     DriveR->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
     DriveL->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
-	pros::lcd::print(3, "Motors set to brake.");
 }
 
 void Drive::motorInitCoast() {
@@ -51,16 +50,39 @@ void Drive::motorInitCoast() {
 
     DriveR->set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
     DriveL->set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
-	pros::lcd::print(3, "Motors set to coast.");
+}
+
+void imu_display (int time) {
+    if (pros::lcd::is_initialized()) return;
+
+    int border = 50;
+
+    pros::screen::set_pen(pros::Color::white);
+    for (int i = 1; i < 3; i++) {
+        pros::screen::draw_rect(border + i, border + i, 480 - border - i, 240 - border - i);
+    }
+
+    static int last_x1 = border;
+    pros::screen::set_pen(pros::Color::royal_blue); 
+    int x1 = (time * ((480 - (border * 2)) / 2000.0)) + border;
+    pros::screen::fill_rect(last_x1, border, x1, 240 - border);
+    last_x1 = x1;
 }
 
 void Drive::gyroInit() {
+    // Set background
+    pros::screen::set_pen(pros::Color::black);
+    pros::screen::fill_rect(1, 1, 1000, 1000);
     for (auto& imu : gyro) { 
         imu.reset(); 
-        while (imu.is_calibrating()) pros::delay(5);
+        int time = 0;
+        while (imu.is_calibrating()) {
+            time += 10;
+            imu_display(time);
+            pros::delay(10);
+        }
     }
     master.rumble("-");
-	pros::lcd::print(2, "Finished gyro calibration");
 }
 
 void Drive::driveWithVoltage(double left, double right) {

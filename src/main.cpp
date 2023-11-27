@@ -4,7 +4,6 @@ AutonSelector selector;
 
 void initialize() {
 	Robot::RobotMgr::currState = PROGRAM_STATE::INITIALIZE;
-	pros::lcd::initialize(); 
 	Robot::RobotMgr::robotInit();
 	selector.add(closeSideElims, "Elims: Close-side with one ball disturb");
 	selector.add(closeSideAWP, "Quals: Close-side with one ball disturb");

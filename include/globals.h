@@ -56,7 +56,6 @@ using namespace std;
 double to_rad(double angle_deg);
 double to_deg(double angle_rad);
 double clamp(double input, double min, double max);
-double to_volt(double pct);
 double deadband(double input, double width);
 int sign(double a);
 double reduceDiff (double desired, double curr);

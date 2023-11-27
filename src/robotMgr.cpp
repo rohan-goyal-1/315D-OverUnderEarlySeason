@@ -117,6 +117,8 @@ void RobotMgr::driveInit () {
 void RobotMgr::robotInit () {
     // Initial drive and pneumatics states
     driveInit();
+    pros::lcd::initialize();
+	pros::lcd::print(2, "Finished IMU calibration");
     pneumaticsInit();
     if (robotManager == nullptr) {
         robotManager = new pros::Task {[=] {
