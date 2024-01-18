@@ -19,7 +19,12 @@ void competition_initialize() {}
 
 void autonomous() {
 	Robot::RobotMgr::currState = PROGRAM_STATE::AUTONOMOUS;
-	selector.run();
+	// selector.run();
+    chassis.drive_dist(10);
+    chassis.turn_to_angle(90);
+    // chassis.drive_dist(-20, 0, false);
+    chassis.right_swing_to_angle(45);
+    chassis.right_swing_to_angle(-45);
 }
 
 void opcontrol() {

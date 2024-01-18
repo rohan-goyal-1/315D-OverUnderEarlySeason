@@ -180,19 +180,26 @@ void Drive::setSwingExitConditions(double settle_error, double settle_time, doub
     swing_timeout = timeout;
 }
 
-void Drive::turn_to_angle(double angle) {
-    turn_to_angle(angle, turn_maxVolt);
+void Drive::turn_to_angle(double angle, bool async) {
+    turn_to_angle(angle, turn_maxVolt, async);
 }
 
-void Drive::turn_to_angle(double angle, double maxVolt) {
-    turn_to_angle(angle, maxVolt, turn_settle_error, turn_settle_time, turn_timeout);
+void Drive::turn_to_angle(double angle, double maxVolt, bool async) {
+    turn_to_angle(angle, maxVolt, turn_settle_error, turn_settle_time, turn_timeout, async);
 }
 
-void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout) {
-    turn_to_angle(angle, maxVolt, settle_error, settle_time, timeout, turn_kp, turn_ki, turn_kd, turn_starti);
+void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, bool async) {
+    turn_to_angle(angle, maxVolt, settle_error, settle_time, timeout, turn_kp, turn_ki, turn_kd, turn_starti, async);
 } 
 
-void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
+void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti, bool async) {
+    if (!mutex.take(TIMEOUT_MAX)) return;
+    if (async) {
+        mutex.give();
+        pros::Task task([&]() { turn_to_angle(angle, maxVolt, settle_error, settle_time, timeout, kp, ki, kd, starti, false); });
+        pros::delay(10);
+        return;
+    }
     // Create the PID object to calculate the outputs
     PID turnPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
@@ -216,19 +223,19 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
 }
 
 
-void Drive::left_swing_to_angle(double angle) {
-    left_swing_to_angle(angle, swing_maxVolt);
+void Drive::left_swing_to_angle(double angle, bool async) {
+    left_swing_to_angle(angle, swing_maxVolt, async);
 }
 
-void Drive::left_swing_to_angle(double angle, double maxVolt) {
-    left_swing_to_angle(angle, maxVolt, swing_settle_error, swing_settle_time, swing_timeout);
+void Drive::left_swing_to_angle(double angle, double maxVolt, bool async) {
+    left_swing_to_angle(angle, maxVolt, swing_settle_error, swing_settle_time, swing_timeout, async);
 }
 
-void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout) {
-    left_swing_to_angle(angle, maxVolt, settle_error, settle_time, timeout, swing_kp, swing_ki, swing_kd, swing_starti);
+void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, bool async) {
+    left_swing_to_angle(angle, maxVolt, settle_error, settle_time, timeout, swing_kp, swing_ki, swing_kd, swing_starti, async);
 } 
 
-void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
+void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti, bool async) {
     PID swingPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
@@ -247,19 +254,19 @@ void Drive::left_swing_to_angle(double angle, double maxVolt, double settle_erro
     this->driveWithVoltage(0, 0);
 }
 
-void Drive::right_swing_to_angle(double angle) {
-    right_swing_to_angle(angle, swing_maxVolt);
+void Drive::right_swing_to_angle(double angle, bool async) {
+    right_swing_to_angle(angle, swing_maxVolt, async);
 }
 
-void Drive::right_swing_to_angle(double angle, double maxVolt) {
-    right_swing_to_angle(angle, maxVolt, swing_settle_error, swing_settle_time, swing_timeout);
+void Drive::right_swing_to_angle(double angle, double maxVolt, bool async) {
+    right_swing_to_angle(angle, maxVolt, swing_settle_error, swing_settle_time, swing_timeout, async);
 }
 
-void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout) {
-    right_swing_to_angle(angle, maxVolt, settle_error, settle_time, timeout, swing_kp, swing_ki, swing_kd, swing_starti);
+void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, bool async) {
+    right_swing_to_angle(angle, maxVolt, settle_error, settle_time, timeout, swing_kp, swing_ki, swing_kd, swing_starti, async);
 } 
 
-void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti) {
+void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti, bool async) {
     PID swingPID(kp, ki, kd, starti, settle_error, settle_time, timeout);
 
     // Start time
@@ -278,23 +285,23 @@ void Drive::right_swing_to_angle(double angle, double maxVolt, double settle_err
     this->driveWithVoltage(0, 0);
 }
 
-void Drive::drive_dist(double dist) {
+void Drive::drive_dist(double dist, bool async) {
     drive_dist(dist, this->getHeading());
 }
 
-void Drive::drive_dist(double dist, double heading) {
+void Drive::drive_dist(double dist, double heading, bool async) {
     drive_dist(dist, heading, drive_maxVolt, heading_maxVolt);
 }
 
-void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt) {
+void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, bool async) {
     drive_dist(dist, heading, drive_maxVolt, heading_maxVolt, drive_settle_error, drive_settle_time, drive_timeout);
 }
 
-void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout) {
+void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, bool async) {
     drive_dist(dist, heading, drive_maxVolt, heading_maxVolt, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti);
 }
 
-void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti) {
+void Drive::drive_dist(double dist, double heading, double drive_maxVolt, double heading_maxVolt, double drive_settle_error, double drive_settle_time, double drive_timeout, double drive_kp, double drive_ki, double drive_kd, double drive_starti, double heading_kp, double heading_ki, double heading_kd, double heading_starti, bool async) {
    PID drivePID(drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
    PID headingPID(heading_kp, heading_ki, heading_kd, heading_starti);
     
@@ -429,29 +436,37 @@ double Drive::getCurvature (Position pose, Position other) {
     return side * ((2 * x) / (d * d));
 }
 
-void Drive::turn_and_drive (double heading, double dist, double turnVolt, double tolerance) {
-    double error = reduceDiff(heading, this->getHeading());
-    while (abs(error) > tolerance) {
-        this->driveWithVoltage(turnVolt * sign(error), -turnVolt * sign(error));
-        error = reduceDiff(heading, this->getHeading());
-    }
-    this->drive_dist(dist, heading);
+// void Drive::turn_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+//     double error = reduceDiff(heading, this->getHeading());
+//     while (abs(error) > tolerance) {
+//         this->driveWithVoltage(turnVolt * sign(error), -turnVolt * sign(error));
+//         error = reduceDiff(heading, this->getHeading());
+//     }
+//     this->drive_dist(dist, heading);
+// }
+
+// void Drive::left_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+//     double error = reduceDiff(heading, this->getHeading());
+//     while (abs(error) > tolerance) {
+//         this->driveWithVoltage(turnVolt * sign(error), 0);
+//         error = reduceDiff(heading, this->getHeading());
+//     }
+//     this->drive_dist(dist, heading);
+// }
+
+// void Drive::right_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
+//     double error = reduceDiff(heading, this->getHeading());
+//     while (abs(error) > tolerance) {
+//         this->driveWithVoltage(0, -turnVolt * sign(error));
+//         error = reduceDiff(heading, this->getHeading());
+//     }
+//     this->drive_dist(dist, heading);
+// }
+
+void Drive::waitUntilSettled () {
+    waitUntil(distTravelled == -1);
 }
 
-void Drive::left_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
-    double error = reduceDiff(heading, this->getHeading());
-    while (abs(error) > tolerance) {
-        this->driveWithVoltage(turnVolt * sign(error), 0);
-        error = reduceDiff(heading, this->getHeading());
-    }
-    this->drive_dist(dist, heading);
-}
-
-void Drive::right_swing_and_drive (double heading, double dist, double turnVolt, double tolerance) {
-    double error = reduceDiff(heading, this->getHeading());
-    while (abs(error) > tolerance) {
-        this->driveWithVoltage(0, -turnVolt * sign(error));
-        error = reduceDiff(heading, this->getHeading());
-    }
-    this->drive_dist(dist, heading);
+void Drive::waitUntilDist (double dist) {
+    waitUntil(distTravelled > dist || distTravelled == -1);
 }

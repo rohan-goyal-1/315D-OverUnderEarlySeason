@@ -32,13 +32,17 @@ void RobotMgr::pneuManage () {
     }
 }
 
+bool intakeStopped () {
+    return intake.get_actual_velocity() <= 100;
+}
+
 void RobotMgr::intakeManage () {
     switch (currState) {
     
     case PROGRAM_STATE::OPCONTROL:
-        if (bumper.get_value()) {
+        if (intakeStopped()) {
             if (master.get_digital_new_press(pros::buttonR2)) {
-                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : -MAX_VOLT);
+                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
                 stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
                 stateMachine[INTAKE_FORW] = false;
             }
@@ -50,12 +54,12 @@ void RobotMgr::intakeManage () {
         }
         else {
             if (master.get_digital_new_press(pros::buttonR2)) {
-                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : -MAX_VOLT);
+                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
                 stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
                 stateMachine[INTAKE_FORW] = false;
             }
             else if (master.get_digital_new_press(pros::buttonR1)) {
-                intake.move_voltage(stateMachine[INTAKE_FORW] ? 0 : MAX_VOLT);
+                intake.move_voltage(stateMachine[INTAKE_FORW] ? 0 : -MAX_VOLT);
                 stateMachine[INTAKE_FORW] = !stateMachine[INTAKE_FORW];
                 stateMachine[INTAKE_REV] = false;
             }
@@ -77,7 +81,7 @@ void RobotMgr::intakeBall (double timeout) {
     pros::Task* intakeTask = new pros::Task {[=] {
         double start = pros::millis();
         intake.move_voltage(MAX_VOLT);
-        waitUntil(bumper.get_value() || pros::millis() - start >= timeout);
+        waitUntil(intakeStopped() || pros::millis() - start >= timeout);
         intake.move_voltage(0);
     }};
 }
@@ -86,7 +90,7 @@ void RobotMgr::outtakeBall (double timeout) {
     pros::Task* outtakeTask = new pros::Task {[=] {
         double start = pros::millis();
         intake.move_voltage(-MAX_VOLT);
-        waitUntil(!bumper.get_value() || pros::millis() - start >= timeout);
+        waitUntil(!intakeStopped() || pros::millis() - start >= timeout);
         intake.move_voltage(0);
     }};
 }

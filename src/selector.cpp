@@ -15,10 +15,7 @@ void AutonSelector::start () {
     pros::lcd::register_btn2_cb(&AutonSelector::increment);
     pros::lcd::register_btn0_cb(&AutonSelector::decrement);
     selectorTask = new pros::Task{[this] {
-        while (true) {
-            if (Robot::RobotMgr::currState != PROGRAM_STATE::INITIALIZE) {
-                break;
-            }
+        while (Robot::RobotMgr::currState == PROGRAM_STATE::INITIALIZE) {
             pros::lcd::set_text(1, autons[current].message);
             wait(10);
         }

@@ -18,8 +18,8 @@ void closeSideAWP () {
 
     // Shove preload with back
     chassis.turn_to_angle(90);
-    chassis.drive_dist(-17, 90);
-    chassis.drive_dist(25, 90);
+    chassis.drive_dist(-17, 90, false);
+    chassis.drive_dist(25, 90, false);
     
     // Descore matchload ball
     chassis.turn_to_angle(-135);
@@ -27,7 +27,7 @@ void closeSideAWP () {
     chassis.turn_to_angle(-45);
     flapjacks.set_value(true);
     wait(250);
-    chassis.drive_dist(-7, -45);
+    chassis.drive_dist(-7, -45, false);
     chassis.left_swing_to_angle(-90);
     flapjacks.set_value(false);
     wait(200);
@@ -39,7 +39,7 @@ void closeSideAWP () {
     wait(500);
     chassis.turn_to_angle(-50);
     blocker.set_value(true);
-    chassis.drive_dist(-38, -90);
+    chassis.drive_dist(-38, -90, false);
     intake.move_voltage(0);
 }
 
@@ -49,14 +49,14 @@ void closeSideElims () {
     chassis.turn_to_angle(-90);
     flapjacks.set_value(true);
     wait(250);
-    chassis.drive_dist(-28, -90);
+    chassis.drive_dist(-28, -90, false);
     chassis.drive_dist(25);
     flapjacks.set_value(false);
     intake.move_voltage(-MAX_VOLT);
     wait(500);
     chassis.turn_to_angle(90);
     chassis.drive_dist(-7);
-    chassis.drive_dist(25, 90);
+    chassis.drive_dist(25, 90, false);
     
     // Descore matchload ball
     chassis.turn_to_angle(-135);
@@ -64,7 +64,7 @@ void closeSideElims () {
     chassis.turn_to_angle(-45);
     flapjacks.set_value(true);
     wait(250);
-    chassis.drive_dist(-7, -45);
+    chassis.drive_dist(-7, -45, false);
 	chassis.setSwingExitConditions(1, 100, 500);
     chassis.left_swing_to_angle(-70);
     flapjacks.set_value(false);
@@ -74,7 +74,7 @@ void closeSideElims () {
     // Touch climbing bar
     chassis.turn_to_angle(130);
     intake.move_voltage(-MAX_VOLT);
-    chassis.drive_dist(37, 90);
+    chassis.drive_dist(37, 90, false);
     intake.move_voltage(0);
     chassis.drive_dist(-40);
 }
@@ -104,7 +104,7 @@ void farSide6Ball () {
     wait(200);
     chassis.driveWithVoltage(0, 0);
     intake.move_voltage(0);
-    chassis.drive_dist(-7, 90);
+    chassis.drive_dist(-7, 90, false);
 
     // Intake fourth ball + outtake it towards the goal
     chassis.turn_to_angle(25);
@@ -123,7 +123,7 @@ void farSide6Ball () {
 
     // Back the fifth ball into the goal using wings
     flapjacks.set_value(true);
-    chassis.drive_dist(-33, 0);
+    chassis.drive_dist(-33, 0, false);
     chassis.drive_dist(10);
     flapjacks.set_value(false);
 
@@ -152,7 +152,7 @@ void farSideMidRush () {
     
     // Shove all three balls
     flapjacks.set_value(true);
-    chassis.drive_dist(-31, -90);
+    chassis.drive_dist(-31, -90, false);
     chassis.drive_dist(10);
     flapjacks.set_value(false);
     chassis.turn_to_angle(90);
@@ -169,7 +169,7 @@ void farSideMidRush () {
     chassis.left_swing_to_angle(-90);
 
     // Score 4th ball
-    chassis.drive_dist(-30, 135);
+    chassis.drive_dist(-30, 135, false);
     chassis.turn_to_angle(90);
     intake.move_voltage(-MAX_VOLT);
     wait(500);
@@ -184,9 +184,9 @@ void farSideMidRush () {
 }
 
 void progSkills () {
-    chassis.drive_dist(-20, -65);
+    chassis.drive_dist(-20, -65, false);
     chassis.right_swing_to_angle(0);
-    chassis.drive_dist(15, -45);
+    chassis.drive_dist(15, -45, false);
     chassis.turn_to_angle(-110);
     chassis.drive_dist(-3);
     flapjacks.set_value(true);
@@ -213,28 +213,28 @@ void progSkills () {
     chassis.driveWithVoltage(-MAX_VOLT, -MAX_VOLT);
     wait(700);
     chassis.driveWithVoltage(0, 0);
-    chassis.drive_dist(10, 45);
+    chassis.drive_dist(10, 45, false);
     chassis.turn_to_angle(-65);
     chassis.drive_dist(-35);
     flapjacks.set_value(true);
-    chassis.right_swing_to_angle(90, 8000);
-    chassis.drive_dist(-18, 90);
+    chassis.right_swing_to_angle(90, 8000, false);
+    chassis.drive_dist(-18, 90, false);
     flapjacks.set_value(false);
-    chassis.drive_dist(20, 90);
+    chassis.drive_dist(20, 90, false);
     flapjacks.set_value(true);
     chassis.driveWithVoltage(-MAX_VOLT, -MAX_VOLT);
     wait(750);
     chassis.driveWithVoltage(0, 0);
     flapjacks.set_value(false);
-    chassis.drive_dist(30, 75);
+    chassis.drive_dist(30, 75, false);
     chassis.turn_to_angle(0);
     chassis.drive_dist(-30, 0, 8000, 6000);
-    chassis.right_swing_to_angle(135, 6000);
+    chassis.right_swing_to_angle(135, 6000, false);
     flapjacks.set_value(true);
     chassis.drive_dist(-20, 135, 8000, 6000);
-    chassis.drive_dist(-17, 90);
+    chassis.drive_dist(-17, 90, false);
     flapjacks.set_value(false);
-    chassis.drive_dist(20, 90);
+    chassis.drive_dist(20, 90, false);
     flapjacks.set_value(true);
     chassis.driveWithVoltage(-MAX_VOLT, -MAX_VOLT);
     wait(750);

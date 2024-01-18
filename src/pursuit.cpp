@@ -1,10 +1,5 @@
 #include "globals.h"
 
-void Drive::waitUntilDist (double dist) {
-    do pros::delay(10);
-    while (distTravelled <= dist && distTravelled != -1);
-}
-
 int findClosest (Position pose, std::vector<Position> path) {
     int closestPoint;
     double closestDist = INT_MAX;
