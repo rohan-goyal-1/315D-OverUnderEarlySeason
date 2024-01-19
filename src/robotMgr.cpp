@@ -33,37 +33,37 @@ void RobotMgr::pneuManage () {
 }
 
 bool intakeStopped () {
-    return intake.get_actual_velocity() <= 100;
+    return intake.get_actual_velocity() <= 1;
 }
 
 void RobotMgr::intakeManage () {
     switch (currState) {
     
     case PROGRAM_STATE::OPCONTROL:
-        if (intakeStopped()) {
+        // if (intakeStopped()) {
+        //     if (master.get_digital_new_press(pros::buttonR2)) {
+        //         intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
+        //         stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
+        //         stateMachine[INTAKE_FORW] = false;
+        //     }
+        //     if (stateMachine[INTAKE_REV] == false && stateMachine[INTAKE_FORW] == false && master.get_digital_new_press(pros::buttonR1)) {
+        //         intake.move_voltage(-MAX_VOLT);
+        //         stateMachine[INTAKE_FORW] = true;
+        //         stateMachine[INTAKE_REV] = false;
+        //     }
+        // }
+        // else {
             if (master.get_digital_new_press(pros::buttonR2)) {
                 intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
                 stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
                 stateMachine[INTAKE_FORW] = false;
             }
-            else if (stateMachine[INTAKE_REV] == false) {
-                intake.move_voltage(0);
-                stateMachine[INTAKE_FORW] = false;
-                stateMachine[INTAKE_REV] = false;
-            }
-        }
-        else {
-            if (master.get_digital_new_press(pros::buttonR2)) {
-                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
-                stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
-                stateMachine[INTAKE_FORW] = false;
-            }
-            else if (master.get_digital_new_press(pros::buttonR1)) {
+            if (master.get_digital_new_press(pros::buttonR1)) {
                 intake.move_voltage(stateMachine[INTAKE_FORW] ? 0 : -MAX_VOLT);
                 stateMachine[INTAKE_FORW] = !stateMachine[INTAKE_FORW];
                 stateMachine[INTAKE_REV] = false;
             }
-        }
+        // }
         break;
 
     case PROGRAM_STATE::INITIALIZE:

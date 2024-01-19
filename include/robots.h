@@ -16,7 +16,7 @@
 #define Imu 15
 
 // Pneumatics
-#define FLAP_P 'E'
+#define FLAP_P 'H'
 #define ENDGAME_P 'G'
 #define BLOCKER_P 'F'
 

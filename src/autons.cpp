@@ -1,82 +1,74 @@
 #include "globals.h"
+#include "robots.h"
 
 void closeSideAWP () {
-    // Outtake preload to goal
-    chassis.drive_dist(40);
-    chassis.turn_to_angle(-70);
-    intake.move_voltage(-MAX_VOLT);
-    wait(200);
-    chassis.drive_dist(-7);
-
-    // Pick up other ball
-    chassis.turn_to_angle(7);
+    chassis.right_swing_to_angle(-45);
+    chassis.drive_dist(20);
+    chassis.left_swing_to_angle(0);
     intake.move_voltage(MAX_VOLT);
-    chassis.drive_dist(9);
     wait(250);
-    intake.move_voltage(0);
-    chassis.drive_dist(-2);
-
-    // Shove preload with back
-    chassis.turn_to_angle(90);
-    chassis.drive_dist(-17, 90, false);
-    chassis.drive_dist(25, 90, false);
-    
-    // Descore matchload ball
-    chassis.turn_to_angle(-135);
-    chassis.drive_dist(52);
-    chassis.turn_to_angle(-45);
+    chassis.drive_dist(-7);
+    chassis.drive_dist(7);
+    chassis.drive_dist(-7);
+    chassis.left_swing_to_angle(-45);
     flapjacks.set_value(true);
-    wait(250);
-    chassis.drive_dist(-7, -45, false);
+    chassis.drive_dist(-15);
     chassis.left_swing_to_angle(-90);
     flapjacks.set_value(false);
-    wait(200);
-
-    // Push three balls into offensive zone + 
-    // Touch climbing bar
-    chassis.turn_to_angle(130);
-    intake.move_voltage(-MAX_VOLT);
-    wait(500);
-    chassis.turn_to_angle(-50);
-    blocker.set_value(true);
-    chassis.drive_dist(-38, -90, false);
-    intake.move_voltage(0);
+    chassis.turn_to_angle(90);
+    chassis.drive_dist(39, 90, 3000, 1000);
 }
 
 void closeSideElims () {
-    // Outtake preload to goal
-    chassis.drive_dist(42);
-    chassis.turn_to_angle(-90);
-    flapjacks.set_value(true);
-    wait(250);
-    chassis.drive_dist(-28, -90, false);
-    chassis.drive_dist(25);
-    flapjacks.set_value(false);
-    intake.move_voltage(-MAX_VOLT);
-    wait(500);
+ //    // Outtake preload to goal
+ //    chassis.drive_dist(42);
+ //    chassis.turn_to_angle(-90);
+ //    flapjacks.set_value(true);
+ //    wait(250);
+ //    chassis.drive_dist(-28, -90, false);
+ //    chassis.drive_dist(25);
+ //    flapjacks.set_value(false);
+ //    intake.move_voltage(-MAX_VOLT);
+ //    wait(500);
+ //    chassis.turn_to_angle(90);
+ //    chassis.drive_dist(-7);
+ //    chassis.drive_dist(25, 90, false);
+ //    
+ //    // Descore matchload ball
+ //    chassis.turn_to_angle(-135);
+ //    chassis.drive_dist(50);
+ //    chassis.turn_to_angle(-45);
+ //    flapjacks.set_value(true);
+ //    wait(250);
+ //    chassis.drive_dist(-7, -45, false);
+	// chassis.setSwingExitConditions(1, 100, 500);
+ //    chassis.left_swing_to_angle(-70);
+ //    flapjacks.set_value(false);
+ //    wait(200);
+	//
+ //    // Push three balls into offensive zone + 
+ //    // Touch climbing bar
+ //    chassis.turn_to_angle(130);
+ //    intake.move_voltage(-MAX_VOLT);
+ //    chassis.drive_dist(37, 90, false);
+ //    intake.move_voltage(0);
+ //    chassis.drive_dist(-40);
+    chassis.drive_dist(-45);
     chassis.turn_to_angle(90);
-    chassis.drive_dist(-7);
-    chassis.drive_dist(25, 90, false);
-    
-    // Descore matchload ball
-    chassis.turn_to_angle(-135);
-    chassis.drive_dist(50);
-    chassis.turn_to_angle(-45);
     flapjacks.set_value(true);
-    wait(250);
-    chassis.drive_dist(-7, -45, false);
-	chassis.setSwingExitConditions(1, 100, 500);
-    chassis.left_swing_to_angle(-70);
-    flapjacks.set_value(false);
+    chassis.drive_dist(-25, 90, false);
     wait(200);
-
-    // Push three balls into offensive zone + 
-    // Touch climbing bar
-    chassis.turn_to_angle(130);
-    intake.move_voltage(-MAX_VOLT);
-    chassis.drive_dist(37, 90, false);
-    intake.move_voltage(0);
-    chassis.drive_dist(-40);
+    intake.move_voltage(MAX_VOLT);
+    chassis.drive_dist(10, 105, false);
+    flapjacks.set_value(false);
+    wait(100);
+    chassis.turn_to_angle(35);
+    chassis.drive_dist(50);
+    chassis.turn_to_angle(135);
+    flapjacks.set_value(true);
+    chassis.drive_dist(-15);
+    chassis.left_swing_to_angle(90);
+    chassis.drive_dist(-39, 90, 3000, 1000);
 }
 
 void farSide6Ball () {
@@ -139,24 +131,25 @@ void farSideMidRush () {
     // Outtake preload to goal
     chassis.drive_dist(40);
     chassis.turn_to_angle(70);
-    intake.move_voltage(-MAX_VOLT);
+    intake.move_voltage(MAX_VOLT);
     wait(200);
     chassis.drive_dist(-10);
+    chassis.turn_to_angle(-45);
 
     // Intake 2nd ball
     chassis.turn_to_angle(-45);
-    intake.move_voltage(MAX_VOLT);
+    intake.move_voltage(-MAX_VOLT);
     chassis.drive_dist(14);
     chassis.right_swing_to_angle(-90);
     intake.move_voltage(0);
-    
+
     // Shove all three balls
     flapjacks.set_value(true);
     chassis.drive_dist(-31, -90, false);
     chassis.drive_dist(10);
     flapjacks.set_value(false);
     chassis.turn_to_angle(90);
-    intake.move_voltage(-MAX_VOLT);
+    intake.move_voltage(MAX_VOLT);
     wait(500);
     intake.move_voltage(0);
     chassis.drive_dist(7);
@@ -164,23 +157,17 @@ void farSideMidRush () {
 
     // Intake 4th ball
     chassis.turn_to_angle(-135);
-    intake.move_voltage(MAX_VOLT);
+    intake.move_voltage(-MAX_VOLT);
     chassis.drive_dist(20);
     chassis.left_swing_to_angle(-90);
 
     // Score 4th ball
     chassis.drive_dist(-30, 135, false);
     chassis.turn_to_angle(90);
-    intake.move_voltage(-MAX_VOLT);
+    intake.move_voltage(MAX_VOLT);
     wait(500);
     intake.move_voltage(0);
     chassis.drive_dist(7);
-
-    // Touch pole
-    chassis.drive_dist(-24);
-    chassis.turn_to_angle(0);
-    flapjacks.set_value(true);
-    chassis.drive_dist(-35);
 }
 
 void progSkills () {

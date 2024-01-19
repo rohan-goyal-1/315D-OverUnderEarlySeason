@@ -193,7 +193,6 @@ void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, dou
 } 
 
 void Drive::turn_to_angle(double angle, double maxVolt, double settle_error, double settle_time, double timeout, double kp, double ki, double kd, double starti, bool async) {
-    if (!mutex.take(TIMEOUT_MAX)) return;
     if (async) {
         mutex.give();
         pros::Task task([&]() { turn_to_angle(angle, maxVolt, settle_error, settle_time, timeout, kp, ki, kd, starti, false); });
