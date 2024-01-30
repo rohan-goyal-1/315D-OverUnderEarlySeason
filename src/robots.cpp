@@ -10,6 +10,8 @@ pros::MotorGroup DriveR ({ RF, RM, RB, });
 
 vector<pros::IMU> gyro = {pros::IMU(Imu)};
 
+pros::Distance distance_sensor(DIST);
+
 Drive chassis (
 	ZERO_ENCODER,
 	gyro,

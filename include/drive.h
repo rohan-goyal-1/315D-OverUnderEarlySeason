@@ -126,6 +126,7 @@ class Drive {
 
         // Drive options
         void tankControl(void);
+        void arcadeControl(void);
 
         // Odom helper methods
         double getForwPos(void);

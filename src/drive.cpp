@@ -355,6 +355,15 @@ void Drive::tankControl () {
     }
 }
 
+void Drive::arcadeControl () {
+    if (Robot::RobotMgr::currState == PROGRAM_STATE::OPCONTROL) {
+    double throttle = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jry);
+    double turn = pros::Controller(pros::E_CONTROLLER_MASTER).get_analog(pros::jrx);
+
+    this->driveWithVoltage(pct_to_volt(throttle + turn), pct_to_volt(throttle - turn));
+    }
+}
+
 void Drive::move_to_point (Position point, bool forwards) {
     move_to_point(point, drive_maxVolt, forwards);
 }

@@ -1,5 +1,4 @@
 #include "globals.h"
-#include "robots.h"
 
 void closeSideAWP () {
     chassis.right_swing_to_angle(-45);
@@ -7,16 +6,19 @@ void closeSideAWP () {
     chassis.left_swing_to_angle(0);
     intake.move_voltage(MAX_VOLT);
     wait(250);
-    chassis.drive_dist(-7);
+    chassis.drive_dist(-6);
     chassis.drive_dist(7);
-    chassis.drive_dist(-7);
+    chassis.drive_dist(-3);
     chassis.left_swing_to_angle(-45);
+    chassis.drive_dist(-12);
     flapjacks.set_value(true);
-    chassis.drive_dist(-15);
-    chassis.left_swing_to_angle(-90);
+    wait(500);
+    chassis.left_swing_to_angle(-80);
     flapjacks.set_value(false);
-    chassis.turn_to_angle(90);
-    chassis.drive_dist(39, 90, 3000, 1000);
+    wait(500);
+    chassis.drive_dist(-8);
+    chassis.turn_to_angle(90, 7000, false);
+    chassis.drive_dist(32, 90, 3000, 1000);
 }
 
 void closeSideElims () {
@@ -53,22 +55,33 @@ void closeSideElims () {
  //    chassis.drive_dist(37, 90, false);
  //    intake.move_voltage(0);
  //    chassis.drive_dist(-40);
-    chassis.drive_dist(-45);
+    chassis.drive_dist(-41);
     chassis.turn_to_angle(90);
     flapjacks.set_value(true);
+    wait(200);
     chassis.drive_dist(-25, 90, false);
     wait(200);
     intake.move_voltage(MAX_VOLT);
     chassis.drive_dist(10, 105, false);
     flapjacks.set_value(false);
-    wait(100);
-    chassis.turn_to_angle(35);
+    wait(500);
+    chassis.turn_to_angle(36);
     chassis.drive_dist(50);
     chassis.turn_to_angle(135);
+    chassis.drive_dist(-2);
+    wait(200);
     flapjacks.set_value(true);
-    chassis.drive_dist(-15);
-    chassis.left_swing_to_angle(90);
-    chassis.drive_dist(-39, 90, 3000, 1000);
+    wait(100);
+    // chassis.drive_dist(7.5);
+    wait(500);
+    chassis.left_swing_to_angle(80);
+    wait(100);
+    flapjacks.set_value(false);
+    wait(500);
+    chassis.drive_dist(-8);
+    chassis.turn_to_angle(-70, 7000, false);
+    chassis.drive_dist(5);
+    chassis.drive_dist(-23, -90, false);
 }
 
 void farSide6Ball () {

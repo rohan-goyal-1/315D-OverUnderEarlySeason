@@ -21,10 +21,10 @@ void RobotMgr::pneuManage () {
         pneumatics[FLAPJACK]->set_value(!stateMachine[FLAPJACK]);
         stateMachine[FLAPJACK] = !stateMachine[FLAPJACK];
     }
-    if (master.get_digital_new_press(pros::buttonL2)) {
-        pneumatics[BLOCKER]->set_value(!stateMachine[BLOCKER]);
-        stateMachine[BLOCKER] = !stateMachine[BLOCKER];
-    }
+    // if (master.get_digital_new_press(pros::buttonL2)) {
+    //     pneumatics[BLOCKER]->set_value(!stateMachine[BLOCKER]);
+    //     stateMachine[BLOCKER] = !stateMachine[BLOCKER];
+    // }
     if (master.get_digital_new_press(pros::buttonDown)) {
         pneumatics[ENDGAME]->set_value(!stateMachine[ENDGAME]);
         stateMachine[ENDGAME] = !stateMachine[ENDGAME];
@@ -33,26 +33,27 @@ void RobotMgr::pneuManage () {
 }
 
 bool intakeStopped () {
-    return intake.get_actual_velocity() <= 1;
+    // return distance_sensor.get() <= 30;
+    return false;
 }
 
 void RobotMgr::intakeManage () {
     switch (currState) {
     
     case PROGRAM_STATE::OPCONTROL:
-        // if (intakeStopped()) {
-        //     if (master.get_digital_new_press(pros::buttonR2)) {
-        //         intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
-        //         stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
-        //         stateMachine[INTAKE_FORW] = false;
-        //     }
-        //     if (stateMachine[INTAKE_REV] == false && stateMachine[INTAKE_FORW] == false && master.get_digital_new_press(pros::buttonR1)) {
-        //         intake.move_voltage(-MAX_VOLT);
-        //         stateMachine[INTAKE_FORW] = true;
-        //         stateMachine[INTAKE_REV] = false;
-        //     }
-        // }
-        // else {
+        if (intakeStopped()) {
+            if (master.get_digital_new_press(pros::buttonR2)) {
+                intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
+                stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
+                stateMachine[INTAKE_FORW] = false;
+            }
+            else {
+                intake.move_voltage(0);
+                stateMachine[INTAKE_REV] = false;
+                stateMachine[INTAKE_REV] = false;
+            }
+        }
+        else {
             if (master.get_digital_new_press(pros::buttonR2)) {
                 intake.move_voltage(stateMachine[INTAKE_REV] ? 0 : MAX_VOLT);
                 stateMachine[INTAKE_REV] = !stateMachine[INTAKE_REV];
@@ -63,7 +64,7 @@ void RobotMgr::intakeManage () {
                 stateMachine[INTAKE_FORW] = !stateMachine[INTAKE_FORW];
                 stateMachine[INTAKE_REV] = false;
             }
-        // }
+        }
         break;
 
     case PROGRAM_STATE::INITIALIZE:
