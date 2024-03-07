@@ -5,9 +5,8 @@
 #define INTAKE_FORW 0
 #define INTAKE_REV 1
 #define CATA 2
-#define BLOCKER 3
-#define FLAPJACK 4
-#define ENDGAME 5
+#define FLAPJACK 3
+#define INTAKE_PULL 4
 
 enum PROGRAM_STATE {
     OPCONTROL,
@@ -32,6 +31,7 @@ class RobotMgr {
         static void robotManage(void);
         static void intakeBall(double);
         static void outtakeBall(double);
+        static bool intakeStopped(void);
 };
 
 }

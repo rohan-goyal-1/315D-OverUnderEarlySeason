@@ -72,6 +72,8 @@ class Drive {
 
         // Misc
         void driveWithVoltage(double left, double right);
+        void drivePID(double left, double right, double max_volt);
+        void drivePID(double left, double right);
         double getHeading(void);
         double getLeftPosition(void);
         double getRightPosition(void);
@@ -145,4 +147,10 @@ class Drive {
         // Async helpers
         void waitUntilSettled();
         void waitUntilDist(double dist);
+
+        void leftArc (double radius, double degrees); 
+        void leftArc (double radius, double degrees, double max_volt);
+        void rightArc (double radius, double degrees);
+        void rightArc (double radius, double degrees, double max_volt);
+
 };

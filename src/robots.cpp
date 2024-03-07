@@ -3,10 +3,10 @@
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 pros::Motor intake(INTAKE_MTR), cata(CATA_MTR);
-pros::adi::DigitalOut flapjacks(FLAP_P), endgame(ENDGAME_P), blocker(BLOCKER_P);
+pros::adi::DigitalOut flapjacks(FLAP_P), endgame(ENDGAME_P), blocker(BLOCKER_P), descore(DESCORE_P), intake_pull(INTAKE_P);
 
-pros::MotorGroup DriveL ({ LF, LM, LB, });
-pros::MotorGroup DriveR ({ RF, RM, RB, });
+pros::MotorGroup DriveL ({ LF, LM1, LB, });
+pros::MotorGroup DriveR ({ RF, RM1, RB, });
 
 vector<pros::IMU> gyro = {pros::IMU(Imu)};
 
@@ -23,5 +23,5 @@ Drive chassis (
 	5.875,
 	5.0,
 	nullptr,
-	9.0
+	11.0
 );

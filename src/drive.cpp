@@ -38,18 +38,26 @@ void Drive::chassisInit() {
 
 void Drive::motorInitBrake() {
     DriveR->set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
+    pros::Motor(RM2).set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
     DriveL->set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
+    pros::Motor(LM2).set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
 
     DriveR->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+    pros::Motor(RM2).set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
     DriveL->set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE);
+    pros::Motor(LM2).set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
 }
 
 void Drive::motorInitCoast() {
     DriveR->set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
+    pros::Motor(RM2).set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
     DriveL->set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
+    pros::Motor(LM2).set_encoder_units_all(pros::E_MOTOR_ENCODER_DEGREES);
 
     DriveR->set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
+    pros::Motor(RM2).set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
     DriveL->set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
+    pros::Motor(LM2).set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 }
 
 void imu_display (int time) {
@@ -86,20 +94,32 @@ void Drive::gyroInit() {
 }
 
 void Drive::driveWithVoltage(double left, double right) {
-    if (left != 0.0) DriveL->move_voltage(left);
-    else DriveL->brake();
-    if (right != 0.0) DriveR->move_voltage(right);
-    else DriveR->brake();
+    if (left != 0.0) {
+        DriveL->move_voltage(left);
+        pros::Motor(LM2).move_voltage(left);
+    }
+    else {
+        DriveL->brake();
+        pros::Motor(LM2).brake();
+    }
+    if (right != 0.0) { 
+        DriveR->move_voltage(right);
+        pros::Motor(RM2).move_voltage(right);
+    }
+    else {
+        DriveR->brake();
+        pros::Motor(RM2).brake();
+    }
 }
 
-double Drive::getHeading() {
+double Drive::getHeading () {
     double sum = 0;
     for (auto& imu : gyro) 
         sum += imu.get_yaw();
     return sum / gyro.size();
 }
 
-double Drive::getRightPosition() {
+double Drive::getRightPosition () {
     vector<double> positions = DriveR->get_position_all();
     double avg = accumulate(positions.begin(), positions.end(), 0);
 
@@ -107,14 +127,14 @@ double Drive::getRightPosition() {
 }
 
 
-double Drive::getLeftPosition() {
+double Drive::getLeftPosition () {
     vector<double> positions = DriveL->get_position_all();
     double avg = accumulate(positions.begin(), positions.end(), 0);
 
     return avg / 360.0 * wheelCircum * gearRatio;
 }
 
-void Drive::setDriveConstants(double kp, double ki, double kd) {
+void Drive::setDriveConstants (double kp, double ki, double kd) {
     setDriveConstants(kp, ki, kd, 12000, 40);
 }
 
@@ -325,7 +345,7 @@ double Drive::getForwPos () {
 
 double Drive::getSidePos () {
     if (drive_type == ZERO_ENCODER) return 0.0;
-    return sideEncoder->get_position() / 36000 * sideCircum;
+    return sideEncoder->get_position() / 36000.0 * sideCircum;
 }
 
 void Drive::startOdom () {
@@ -477,4 +497,48 @@ void Drive::waitUntilSettled () {
 
 void Drive::waitUntilDist (double dist) {
     waitUntil(distTravelled > dist || distTravelled == -1);
+}
+
+void Drive::drivePID (double left, double right) {
+    drivePID(left, right, drive_maxVolt);
+}
+
+void Drive::drivePID (double left, double right, double max_volt) {
+   PID leftPID(drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+   PID rightPID(drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+    
+    double left_start_pos = this->getLeftPosition();
+    double right_start_pos = this->getRightPosition();
+    while (!leftPID.is_settled() || !rightPID.is_settled()) {
+        double left_error = left_start_pos + left - this->getLeftPosition();
+        double right_error = right_start_pos + right - this->getRightPosition();
+
+        double left_output = clamp(leftPID.compute(left_error), -max_volt, max_volt);
+        double right_output = clamp(rightPID.compute(right_error), -max_volt, max_volt);
+
+        this->driveWithVoltage(left_output, right_output);
+        // Delay to avoid hogging processor
+        pros::delay(5);
+    }
+    this->driveWithVoltage(0, 0);
+}
+
+void Drive::leftArc (double radius, double degrees) {
+    leftArc(radius, degrees, drive_maxVolt);
+}
+
+void Drive::leftArc (double radius, double degrees, double max_volt) {
+    double left_drive = (degrees / 360) * (2 * PI * (radius - trackWidth / 2));
+    double right_drive = (degrees / 360) * (2 * PI * (radius + trackWidth / 2));
+    drivePID(left_drive, right_drive, max_volt);
+}
+
+void Drive::rightArc (double radius, double degrees) {
+    rightArc(radius, degrees, drive_maxVolt);
+}
+
+void Drive::rightArc (double radius, double degrees, double max_volt) {
+    double left_drive = (degrees / 360) * (2 * PI * (radius + trackWidth / 2));
+    double right_drive = (degrees / 360) * (2 * PI * (radius - trackWidth / 2));
+    drivePID(left_drive, right_drive, max_volt);
 }

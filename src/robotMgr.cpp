@@ -1,8 +1,8 @@
 #include "globals.h"
 
 // Initialize static variables
-vector<bool> Robot::RobotMgr::stateMachine(6, false);
-vector<pros::adi::DigitalOut*> Robot::RobotMgr::pneumatics(6, nullptr);
+vector<bool> Robot::RobotMgr::stateMachine(5, false);
+vector<pros::adi::DigitalOut*> Robot::RobotMgr::pneumatics(5, nullptr);
 pros::Task* Robot::RobotMgr::robotManager = nullptr;
 PROGRAM_STATE Robot::RobotMgr::currState = PROGRAM_STATE::INITIALIZE;
 
@@ -10,31 +10,28 @@ namespace Robot {
 
 void RobotMgr::robotManage () {
     intakeManage();
-    cataManage();
     pneuManage();
     chassis.tankControl();
 }
 
 void RobotMgr::pneuManage () {
     if (currState == PROGRAM_STATE::OPCONTROL) {
-    if (master.get_digital_new_press(pros::buttonL1)) {
-        pneumatics[FLAPJACK]->set_value(!stateMachine[FLAPJACK]);
-        stateMachine[FLAPJACK] = !stateMachine[FLAPJACK];
-    }
-    // if (master.get_digital_new_press(pros::buttonL2)) {
-    //     pneumatics[BLOCKER]->set_value(!stateMachine[BLOCKER]);
-    //     stateMachine[BLOCKER] = !stateMachine[BLOCKER];
-    // }
-    if (master.get_digital_new_press(pros::buttonDown)) {
-        pneumatics[ENDGAME]->set_value(!stateMachine[ENDGAME]);
-        stateMachine[ENDGAME] = !stateMachine[ENDGAME];
-    }
+        if (master.get_digital_new_press(pros::buttonL1)) {
+            pneumatics[FLAPJACK]->set_value(!stateMachine[FLAPJACK]);
+            stateMachine[FLAPJACK] = !stateMachine[FLAPJACK];
+        }
+
+        if (master.get_digital_new_press(pros::buttonL2)) {
+            pneumatics[INTAKE_PULL]->set_value(!stateMachine[INTAKE_PULL]);
+            stateMachine[INTAKE_PULL] = !stateMachine[INTAKE_PULL];
+        }
     }
 }
 
-bool intakeStopped () {
+bool RobotMgr::intakeStopped () {
     // return distance_sensor.get() <= 30;
     return false;
+    // return stateMachine[INTAKE_FORW] && intake.get_actual_velocity() < 10;
 }
 
 void RobotMgr::intakeManage () {
@@ -49,7 +46,6 @@ void RobotMgr::intakeManage () {
             }
             else {
                 intake.move_voltage(0);
-                stateMachine[INTAKE_REV] = false;
                 stateMachine[INTAKE_REV] = false;
             }
         }
@@ -96,15 +92,6 @@ void RobotMgr::outtakeBall (double timeout) {
     }};
 }
 
-void RobotMgr::cataManage () {
-    if (currState == PROGRAM_STATE::OPCONTROL) {
-    if (master.get_digital_new_press(pros::buttonX)) {
-        cata.move_voltage(stateMachine[CATA] ? 0 : MAX_VOLT);
-        stateMachine[CATA] = !stateMachine[CATA];
-    }
-    }
-}
-
 void RobotMgr::driveInit () {
     chassis.setDriveConstants(1500.0, 00.0, 10000.0, 10000, 0.0);
 	chassis.setTurnConstants(400.0, 10.0, 4000.0, 12000, 15.0);
@@ -136,12 +123,10 @@ void RobotMgr::robotInit () {
 }
 
 void RobotMgr::pneumaticsInit () {
-	pneumatics[BLOCKER] = &blocker,
-	pneumatics[ENDGAME] = &endgame,
 	pneumatics[FLAPJACK] = &flapjacks;
     pneumatics[FLAPJACK]->set_value(false);
-    pneumatics[ENDGAME]->set_value(false);
-    pneumatics[BLOCKER]->set_value(false);
+	pneumatics[INTAKE_PULL] = &intake_pull;
+    pneumatics[INTAKE_PULL]->set_value(false);
 }
 
 }
